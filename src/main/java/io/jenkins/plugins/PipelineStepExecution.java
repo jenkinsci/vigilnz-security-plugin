@@ -14,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 public class PipelineStepExecution extends StepExecution {
     private final transient PipelineStep step;
@@ -93,7 +94,17 @@ public class PipelineStepExecution extends StepExecution {
             }
 
             String token = creds.getToken().getPlainText();
-            boolean result = ApiService.triggerScan(token, step.getTargetFile(), env, listener);
+            List<String> scanTypes = step.getScanTypes();
+            
+            // Validate at least one scan type is selected
+            if (scanTypes == null || scanTypes.isEmpty()) {
+                listener.error("Error: At least one scan type must be selected.");
+                getContext().onFailure(new AbortException("At least one scan type must be selected"));
+                return false;
+            }
+            
+            listener.getLogger().println("Selected Scan Types: " + String.join(", ", scanTypes));
+            boolean result = ApiService.triggerScan(token, step.getTargetFile(), scanTypes, env, listener);
 
             if (!result) {
                 listener.error("Scan failed");

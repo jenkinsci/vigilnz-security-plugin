@@ -4,13 +4,21 @@
     <f:entry title="Token" field="token">
         <f:password/>
     </f:entry>
-    <f:entry title="ID" field="tokenId">
+    
+    <f:entry title="ID">
         <j:choose>
-            <j:when test="${instance != null and instance.tokenId != null}">
-                <f:readOnlyTextbox/>
+            <!-- Existing credential: show read-only with actual Jenkins ID -->
+            <j:when test="${instance != null}">
+                <!-- Get the actual ID to display and submit -->
+                <j:set var="idValue" value="${instance.tokenId != null and instance.tokenId != '' ? instance.tokenId : instance.id}"/>
+                <!-- Display as read-only -->
+                <f:readOnlyTextbox value="${idValue}"/>
+                <!-- Submit the actual ID as hidden field (not using field="tokenId" to avoid conflict) -->
+                <input type="hidden" name="tokenId" value="${idValue}"/>
             </j:when>
+            <!-- New credential: allow user to enter ID (optional) -->
             <j:otherwise>
-                <f:textbox/>
+                <f:textbox field="tokenId"/>
             </j:otherwise>
         </j:choose>
     </f:entry>

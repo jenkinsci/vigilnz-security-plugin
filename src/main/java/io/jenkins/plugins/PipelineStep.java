@@ -9,17 +9,20 @@ import org.jenkinsci.plugins.workflow.steps.StepDescriptor;
 import org.jenkinsci.plugins.workflow.steps.StepExecution;
 import org.kohsuke.stapler.DataBoundConstructor;
 
+import java.util.List;
 import java.util.Set;
 
 public class PipelineStep extends Step {
 
     private final String token;
     private final String targetFile;
+    private final List<String> scanTypes;
 
     @DataBoundConstructor
-    public PipelineStep(String token, String targetFile) {
+    public PipelineStep(String token, String targetFile, List<String> scanTypes) {
         this.token = token;
         this.targetFile = targetFile;
+        this.scanTypes = scanTypes != null ? scanTypes : List.of();
     }
 
     public String getToken() {
@@ -28,6 +31,10 @@ public class PipelineStep extends Step {
 
     public String getTargetFile() {
         return targetFile;
+    }
+
+    public List<String> getScanTypes() {
+        return scanTypes != null ? scanTypes : List.of();
     }
 
     @Override

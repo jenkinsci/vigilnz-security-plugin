@@ -5,21 +5,17 @@
         <c:select/>
     </f:entry>
 
-    <!-- Hidden area -->
-    <div id="tokenOptions" style="display:none; margin-top:10px;">
-        <f:entry title="Organisation">
-            <f:textbox name="organisation"/>
-        </f:entry>
-    </div>
-
+    <f:entry field="scanTypes" title="Scan Types" description="Select at least one scan type (required)">
+        <div style="display:flex;gap:20px;">
+            <f:checkbox field="cveScan" title="CVE Scan"/>
+            <f:checkbox field="sastScan" title="SAST Scan"/>
+            <f:checkbox field="sbomScan" title="SBOM Scan"/>
+        </div>
+    </f:entry>
+<!--    <f:entry title="Project" field="projectName">-->
+<!--        <f:textbox/>-->
+<!--    </f:entry>-->
     <f:entry title="Target File" field="targetFile">
         <f:textbox/>
     </f:entry>
-
-    <script>
-        function showTokenOptions() {
-        document.getElementById("tokenOptions").style.display = "block";
-        }
-    </script>
-
 </j:jelly>

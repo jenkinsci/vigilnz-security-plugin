@@ -24,8 +24,11 @@ public class TokenCredentials extends BaseStandardCredentials {
             Secret token
     ) {
         super(scope, tokenId, tokenDescription);
+        // If tokenId is null or empty, use empty string (Jenkins will handle ID generation)
+        // This prevents errors when updating credentials that were created without an ID
+        String idToUse = (tokenId == null || tokenId.trim().isEmpty()) ? "" : tokenId;
         this.token = token;
-        this.tokenId = tokenId;
+        this.tokenId = idToUse;
         this.tokenDescription = tokenDescription;
     }
 
@@ -34,6 +37,10 @@ public class TokenCredentials extends BaseStandardCredentials {
     }
 
     public String getTokenId() {
+        // If tokenId was never set by user, return the actual Jenkins-generated ID
+        if (tokenId == null || tokenId.trim().isEmpty()) {
+            return getId();
+        }
         return tokenId;
     }
 
