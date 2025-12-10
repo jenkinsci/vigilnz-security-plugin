@@ -17,7 +17,9 @@
 
     <!--  Plugin Name  -->
     <name>Vigilnz Security</name>
-    <description>Vigilnz Security Plugin integrates security scanning capabilities into Jenkins. Run CVE, SAST, SBOM, and other security scans as part of your CI/CD pipeline.</description>
+    <description>Vigilnz Security Plugin integrates security scanning capabilities into Jenkins. Run CVE, SAST, SBOM,
+        and other security scans as part of your CI/CD pipeline.
+    </description>
     <url>https://github.com/${gitHubRepo}</url>
     <licenses>
         <license>
@@ -32,18 +34,18 @@
         <tag>${scmTag}</tag>
         <url>https://github.com/${gitHubRepo}</url>
     </scm>
-    
-    <developers>
-        <developer>
-            <id>vigilnz</id>
-            <name>Vigilnz Team</name>
-            <email>support@vigilnz.com</email>
-        </developer>
-    </developers>
+
+    <!--    <developers>-->
+    <!--        <developer>-->
+    <!--            <id>vigilnz</id>-->
+    <!--            <name>Vigilnz Team</name>-->
+    <!--            <email>support@vigilnz.com</email>-->
+    <!--        </developer>-->
+    <!--    </developers>-->
 
     <properties>
         <revision>1.0</revision>
-        <changelist></changelist>
+        <changelist>999999-SNAPSHOT</changelist>
         <!-- https://www.jenkins.io/doc/developer/plugin-development/choosing-jenkins-baseline/ -->
         <jenkins.baseline>2.516</jenkins.baseline>
         <jenkins.version>${jenkins.baseline}.3</jenkins.version>
@@ -52,7 +54,6 @@
         <spotless.check.skip>false</spotless.check.skip>
         <ban-junit4-imports.skip>false</ban-junit4-imports.skip>
         <hpi.strictBundledArtifacts>true</hpi.strictBundledArtifacts>
-        <hpi.bundledArtifacts>jackson-annotations,jackson-core,jackson-databind</hpi.bundledArtifacts>
     </properties>
 
     <dependencyManagement>
@@ -60,7 +61,7 @@
             <dependency>
                 <groupId>io.jenkins.tools.bom</groupId>
                 <artifactId>bom-${jenkins.baseline}.x</artifactId>
-                <version>5659.vecf9e2dc5a_ed</version>
+                <version>5750.vec44cb_c78352</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -87,7 +88,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>credentials</artifactId>
-            <version>1337.v60b_d7b_c7b_c9f</version>
+            <!--            <version>1337.v60b_d7b_c7b_c9f</version>-->
         </dependency>
 
         <!-- Pipeline Step API -->
@@ -112,10 +113,15 @@
             <scope>provided</scope>
         </dependency>
 
+        <!--        <dependency>-->
+        <!--            <groupId>com.fasterxml.jackson.core</groupId>-->
+        <!--            <artifactId>jackson-databind</artifactId>-->
+        <!--            <version>2.20.1</version>-->
+        <!--        </dependency>-->
+
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.20.1</version>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>jackson2-api</artifactId>
         </dependency>
 
     </dependencies>
