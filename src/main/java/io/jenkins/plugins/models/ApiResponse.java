@@ -1,7 +1,10 @@
 package io.jenkins.plugins.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.util.List;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ApiResponse {
     private String message;
     private String repositoryId;
@@ -82,6 +85,7 @@ public class ApiResponse {
     }
 
     // Nested classes
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Result {
         private String scanType;
         private String projectName;

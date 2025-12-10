@@ -36,17 +36,17 @@ public class SecurityCheckBuilder extends Builder {
         this.token = token;
     }
 
-    @DataBoundSetter
-    public void setTargetFile(String targetFile) {
-        this.targetFile = targetFile;
-    }
-
     public Secret getToken() {
         return token;
     }
 
     public String getTargetFile() {
         return targetFile;
+    }
+
+    @DataBoundSetter
+    public void setTargetFile(String targetFile) {
+        this.targetFile = targetFile;
     }
 
     public boolean isCveScan() {
@@ -111,15 +111,15 @@ public class SecurityCheckBuilder extends Builder {
         );
 
         if (creds == null) {
-            listener.error("Error: Vigilnz Token credential not found with ID: " + credentialId);
+            listener.error("Error: Vigilnz Token credential not found");
             return false;
         }
 
         // Get the actual token value from the credential
         String tokenText = creds.getToken().getPlainText();
 
-        listener.getLogger().println("Credential ID: " + credentialId);
-        listener.getLogger().println("Your Token from Plugin: " + tokenText);
+//        listener.getLogger().println("Credential ID: " + credentialId);
+//        listener.getLogger().println("Your Token from Plugin: " + tokenText);
         if (targetFile != null && !targetFile.trim().isEmpty()) {
             listener.getLogger().println("Target File: " + targetFile);
         } else {

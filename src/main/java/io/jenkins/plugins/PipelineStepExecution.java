@@ -83,8 +83,8 @@ public class PipelineStepExecution extends StepExecution {
         listener.getLogger().println("------ Pipeline Method ------");
 
         if (creds != null) {
-            listener.getLogger().println("Token ID: " + creds.getTokenId());
-            listener.getLogger().println("Description: " + creds.getTokenDescription());
+//            listener.getLogger().println("Token ID: " + creds.getTokenId());
+//            listener.getLogger().println("Description: " + creds.getTokenDescription());
             EnvVars env = getContext().get(EnvVars.class);
 
             FilePath ws = getContext().get(FilePath.class);

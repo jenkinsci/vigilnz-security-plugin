@@ -4,8 +4,9 @@ package io.jenkins.plugins.utils;
 public class VigilnzConfig {
 
     // Default URLs (for development)
-    public static final String DEFAULT_AUTH_URL = "http://localhost:1337/auth/api-key";
-    public static final String DEFAULT_SCAN_URL = "http://localhost:1337/scan-targets/multi-scan";
+    public static final String DEFAULT_BASE_URL = "https://devapi.vigilnz.com";
+    public static final String DEFAULT_AUTH_URL = DEFAULT_BASE_URL + "/auth/api-key";
+    public static final String DEFAULT_SCAN_URL = DEFAULT_BASE_URL + "/scan-targets/multi-scan";
 
 }
 

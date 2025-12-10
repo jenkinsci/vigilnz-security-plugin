@@ -23,8 +23,6 @@ public class ApiService {
             String authUrl = DEFAULT_AUTH_URL;
             URL url = new URL(authUrl);
 
-            listener.getLogger().println("Authenticating with API key..." + url);
-
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
@@ -34,14 +32,11 @@ public class ApiService {
             json.put("apiKey", apiKey);
             String body = json.toString();
 
-            listener.getLogger().println("Auth Request Body: " + body);
-
             try (OutputStream os = conn.getOutputStream()) {
                 os.write(body.getBytes());
             }
 
             int responseCode = conn.getResponseCode();
-            listener.getLogger().println("Auth Response Code: " + responseCode);
 
             if (responseCode != 200) {
                 // Read error response
@@ -51,7 +46,7 @@ public class ApiService {
                     while ((line = reader.readLine()) != null) {
                         errorResponse.append(line);
                     }
-                    listener.error("Authentication failed: " + errorResponse.toString());
+                    listener.error("Authentication failed: " + errorResponse);
                 }
                 return null;
             }
@@ -64,8 +59,6 @@ public class ApiService {
                     response.append(line);
                 }
             }
-
-            listener.getLogger().println("Auth Response Body: " + response);
 
             // Parse response
             JSONObject responseJson = JSONObject.fromObject(response.toString());
@@ -136,8 +129,6 @@ public class ApiService {
 
             String body = json.toString();
 
-            listener.getLogger().println("Request Body: " + body);
-
             try (OutputStream os = conn.getOutputStream()) {
                 os.write(body.getBytes());
             }
@@ -151,7 +142,7 @@ public class ApiService {
                 while ((line = reader.readLine()) != null) {
                     response.append(line);
                 }
-                listener.getLogger().println("API Response Body: " + response);
+//                listener.getLogger().println("API Response Body: " + response);
             }
 
             return response.toString();
