@@ -79,13 +79,6 @@ pipeline {
 
 ## Configuration
 
-### Environment Variables
-
-You can configure API endpoints using environment variables or system properties:
-
-- `VIGILNZ_AUTH_URL` or `-Dvigilnz.auth.url`: Authentication API URL (default: `http://localhost:1337/auth/api-key`)
-- `VIGILNZ_SCAN_URL` or `-Dvigilnz.scan.url`: Multi-scan API URL (default: `http://localhost:8000/scan-targets/multi-scan`)
-
 ### Scan Types
 
 - **CVE**: Common Vulnerabilities and Exposures scan
