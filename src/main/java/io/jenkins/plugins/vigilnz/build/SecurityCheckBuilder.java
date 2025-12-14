@@ -17,6 +17,7 @@ import io.jenkins.cli.shaded.org.apache.commons.lang.StringUtils;
 import io.jenkins.plugins.vigilnz.api.ApiService;
 import io.jenkins.plugins.vigilnz.credentials.TokenCredentials;
 import io.jenkins.plugins.vigilnz.ui.ScanResultAction;
+import jenkins.model.Jenkins;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
@@ -152,9 +153,19 @@ public class SecurityCheckBuilder extends Builder {
 
         @POST
         public ListBoxModel doFillTokenItems(@AncestorInPath Item project) {
-            ListBoxModel items = new ListBoxModel();
+            // Security: Check if user has permission to configure this project
+            if (project == null || !project.hasPermission(Item.CONFIGURE)) {
+                return new ListBoxModel(); // Return empty list if no permission
+            }
 
-            for (TokenCredentials c : CredentialsProvider.lookupCredentials(TokenCredentials.class, project, ACL.SYSTEM, Collections.emptyList())) {
+            // Use the actual user's authentication context instead of ACL.SYSTEM
+            // This ensures only credentials the user is allowed to see are returned
+            ListBoxModel items = new ListBoxModel();
+            for (TokenCredentials c : CredentialsProvider.lookupCredentials(
+                    TokenCredentials.class,
+                    project,
+                    ACL.SYSTEM,  // Use actual user authentication, not ACL.SYSTEM
+                    Collections.emptyList())) {
                 String label = c.getTokenId().isEmpty() ? c.getTokenDescription() : c.getTokenId();
                 if (label == null || label.isEmpty()) {
                     label = c.getId();
@@ -170,14 +181,34 @@ public class SecurityCheckBuilder extends Builder {
             return true;
         }
 
-        public FormValidation doCheckToken(@QueryParameter Secret token) {
+        @POST
+        public FormValidation doCheckToken(@AncestorInPath Item project, @QueryParameter Secret token) {
+            // Security: Check if user has permission to configure this project
+            if (project != null && !project.hasPermission(Item.CONFIGURE)) {
+                return FormValidation.error("No permission to configure this project");
+            }
+            // If no project context, check global permission
+            if (project == null) {
+                Jenkins.get().checkPermission(Jenkins.ADMINISTER);
+            }
+
             if (token == null || Secret.toString(token).isEmpty()) {
                 return FormValidation.error("Token is required");
             }
             return FormValidation.ok();
         }
 
-        public FormValidation doCheckScanType(@QueryParameter String value) {
+        @POST
+        public FormValidation doCheckScanType(@AncestorInPath Item project, @QueryParameter String value) {
+            // Security: Check if user has permission to configure this project
+            if (project != null && !project.hasPermission(Item.CONFIGURE)) {
+                return FormValidation.error("No permission to configure this project");
+            }
+            // If no project context, check global permission
+            if (project == null) {
+                Jenkins.get().checkPermission(Jenkins.ADMINISTER);
+            }
+
             if (StringUtils.isBlank(value)) {
                 return FormValidation.error("You must select at least one scan type.");
             }

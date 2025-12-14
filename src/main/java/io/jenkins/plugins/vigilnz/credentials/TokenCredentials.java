@@ -4,16 +4,27 @@ import com.cloudbees.plugins.credentials.CredentialsDescriptor;
 import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.impl.BaseStandardCredentials;
 import hudson.Extension;
+import hudson.model.Item;
 import hudson.util.FormValidation;
 import hudson.util.Secret;
+import jenkins.model.Jenkins;
 import org.jenkinsci.Symbol;
+import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.verb.POST;
 
 public class TokenCredentials extends BaseStandardCredentials {
 
+    /** API token - stored securely using Jenkins Secret (encrypted when serialized) */
     private final Secret token;
+    
+    /** Credential identifier (not sensitive - just a label/ID, not a password) */
+    // lgtm[jenkins/password-in-field]
     private final String tokenId;
+    
+    /** Credential description (not sensitive - just metadata, not a password) */
+    // lgtm[jenkins/password-in-field]
     private final String tokenDescription;
 
     @DataBoundConstructor
@@ -66,14 +77,38 @@ public class TokenCredentials extends BaseStandardCredentials {
             return "Vigilnz Security Token";
         }
 
-        public FormValidation doCheckToken(@QueryParameter String token) {
+        @POST
+        public FormValidation doCheckToken(@AncestorInPath Item item, @QueryParameter String token) {
+            // Security: Check if user has permission to configure this item (project/folder)
+            // If item is provided, check item permission; otherwise check global admin permission
+            if (item != null) {
+                if (!item.hasPermission(Item.CONFIGURE)) {
+                    return FormValidation.error("No permission to configure this item");
+                }
+            } else {
+                // Global credential creation/editing requires admin permission
+                Jenkins.get().checkPermission(Jenkins.ADMINISTER);
+            }
+            
             if (token == null || token.trim().isEmpty()) {
                 return FormValidation.error("Field is required");
             }
             return FormValidation.ok();
         }
 
-        public FormValidation doCheckTokenId(@QueryParameter String tokenId) {
+        @POST
+        public FormValidation doCheckTokenId(@AncestorInPath Item item, @QueryParameter String tokenId) {
+            // Security: Check if user has permission to configure this item (project/folder)
+            // If item is provided, check item permission; otherwise check global admin permission
+            if (item != null) {
+                if (!item.hasPermission(Item.CONFIGURE)) {
+                    return FormValidation.error("No permission to configure this item");
+                }
+            } else {
+                // Global credential creation/editing requires admin permission
+                Jenkins.get().checkPermission(Jenkins.ADMINISTER);
+            }
+            
             if (tokenId != null && !tokenId.trim().isEmpty()) {
                 // Check for spaces
                 if (tokenId.contains(" ")) {
