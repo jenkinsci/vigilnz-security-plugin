@@ -1,6 +1,8 @@
 package io.jenkins.plugins.vigilnz.pipeline;
 
 import hudson.Extension;
+import hudson.FilePath;
+import hudson.model.Run;
 import hudson.model.TaskListener;
 import jakarta.annotation.Nonnull;
 import org.jenkinsci.plugins.workflow.steps.Step;
@@ -70,9 +72,14 @@ public class PipelineStep extends Step {
             return "Run Vigilnz Security Scan";
         }
 
+//        @Override
+//        public Set<? extends Class<?>> getRequiredContext() {
+//            return Set.of(TaskListener.class);
+//        }
+
         @Override
         public Set<? extends Class<?>> getRequiredContext() {
-            return Set.of(TaskListener.class);
+            return Set.of(TaskListener.class, Run.class, FilePath.class);
         }
     }
 
