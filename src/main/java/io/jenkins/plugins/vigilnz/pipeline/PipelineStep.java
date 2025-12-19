@@ -5,6 +5,9 @@ import hudson.FilePath;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import jakarta.annotation.Nonnull;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 import org.jenkinsci.plugins.workflow.steps.Step;
 import org.jenkinsci.plugins.workflow.steps.StepContext;
 import org.jenkinsci.plugins.workflow.steps.StepDescriptor;
@@ -12,17 +15,11 @@ import org.jenkinsci.plugins.workflow.steps.StepExecution;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-
-
 public class PipelineStep extends Step {
-
 
     private final String credentialsId;
     private final List<String> scanTypes;
-    private String targetFile;  // Optional parameter
+    private String targetFile; // Optional parameter
 
     @DataBoundConstructor
     public PipelineStep(String credentialsId, String scanTypes) {
@@ -63,7 +60,7 @@ public class PipelineStep extends Step {
 
         @Override
         public String getFunctionName() {
-            return "vigilnzScan";   // This is the pipeline function name
+            return "vigilnzScan"; // This is the pipeline function name
         }
 
         @Nonnull
@@ -72,15 +69,14 @@ public class PipelineStep extends Step {
             return "Run Vigilnz Security Scan";
         }
 
-//        @Override
-//        public Set<? extends Class<?>> getRequiredContext() {
-//            return Set.of(TaskListener.class);
-//        }
+        //        @Override
+        //        public Set<? extends Class<?>> getRequiredContext() {
+        //            return Set.of(TaskListener.class);
+        //        }
 
         @Override
         public Set<? extends Class<?>> getRequiredContext() {
             return Set.of(TaskListener.class, Run.class, FilePath.class);
         }
     }
-
 }

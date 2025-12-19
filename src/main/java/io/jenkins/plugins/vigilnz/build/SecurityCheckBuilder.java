@@ -19,6 +19,9 @@ import io.jenkins.plugins.vigilnz.api.ApiService;
 import io.jenkins.plugins.vigilnz.credentials.TokenCredentials;
 import io.jenkins.plugins.vigilnz.models.ApiResponse;
 import io.jenkins.plugins.vigilnz.ui.ScanResultAction;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -26,15 +29,11 @@ import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.verb.POST;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-
 // This file for Jenkins FreeStyle Job Method
 public class SecurityCheckBuilder extends Builder {
 
     private final String credentialsId;
-    private String targetFile;  // Optional parameter
+    private String targetFile; // Optional parameter
     private boolean cveScan;
     private boolean sastScan;
     private boolean sbomScan;
@@ -94,7 +93,8 @@ public class SecurityCheckBuilder extends Builder {
 
     // this function trigger when user click the build button
     @Override
-    public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
+    public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener)
+            throws InterruptedException, IOException {
 
         EnvVars env = build.getEnvironment(listener);
         listener.getLogger().println("------ Freestyle Method ------");
@@ -111,17 +111,14 @@ public class SecurityCheckBuilder extends Builder {
 
         // Validate credentials ID is provided
         if (credentialsId == null || credentialsId.trim().isEmpty()) {
-            listener.error("Error: Credentials ID is required. Please select a credential in the build step configuration.");
+            listener.error(
+                    "Error: Credentials ID is required. Please select a credential in the build step configuration.");
             attachResult(build, buildErrorResponse("Credentials ID is required."));
             return false;
         }
 
         // Look up the actual TokenCredentials object
-        TokenCredentials creds = CredentialsProvider.findCredentialById(
-                credentialsId,
-                TokenCredentials.class,
-                build
-        );
+        TokenCredentials creds = CredentialsProvider.findCredentialById(credentialsId, TokenCredentials.class, build);
 
         if (creds == null) {
             listener.error("Error: Vigilnz Token credential not found with ID: " + credentialsId);
@@ -131,8 +128,8 @@ public class SecurityCheckBuilder extends Builder {
         // Get the actual token value from the credential
         String tokenText = creds.getToken().getPlainText();
 
-//        listener.getLogger().println("Credential ID: " + credentialsId);
-//        listener.getLogger().println("Your Token from Plugin: " + tokenText);
+        //        listener.getLogger().println("Credential ID: " + credentialsId);
+        //        listener.getLogger().println("Your Token from Plugin: " + tokenText);
         if (targetFile != null && !targetFile.trim().isEmpty()) {
             listener.getLogger().println("Target File: " + targetFile);
         } else {
@@ -183,7 +180,7 @@ public class SecurityCheckBuilder extends Builder {
 
         @Override
         public String getDisplayName() {
-            return "Invoke Vigilnz Security Task";   // This appears in dropdown
+            return "Invoke Vigilnz Security Task"; // This appears in dropdown
         }
 
         @POST
@@ -199,7 +196,7 @@ public class SecurityCheckBuilder extends Builder {
             for (TokenCredentials c : CredentialsProvider.lookupCredentials(
                     TokenCredentials.class,
                     project,
-                    ACL.SYSTEM,  // Use actual user authentication, not ACL.SYSTEM
+                    ACL.SYSTEM, // Use actual user authentication, not ACL.SYSTEM
                     Collections.emptyList())) {
                 String label = c.getId().isEmpty() ? c.getDescription() : c.getId();
                 if (label == null || label.isEmpty()) {
@@ -209,7 +206,6 @@ public class SecurityCheckBuilder extends Builder {
             }
             return items;
         }
-
 
         @Override
         public boolean isApplicable(Class jobType) {
@@ -249,6 +245,5 @@ public class SecurityCheckBuilder extends Builder {
             }
             return FormValidation.ok();
         }
-
     }
 }

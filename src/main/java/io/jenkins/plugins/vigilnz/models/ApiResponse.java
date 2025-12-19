@@ -1,7 +1,6 @@
 package io.jenkins.plugins.vigilnz.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -15,8 +14,7 @@ public class ApiResponse {
     private int failedResults;
     private List<Result> results;
 
-    public ApiResponse() {
-    }
+    public ApiResponse() {}
 
     // getters and setters
 
@@ -96,8 +94,7 @@ public class ApiResponse {
         private String status;
         private String message;
 
-        public Result() {
-        }
+        public Result() {}
 
         public String getScanType() {
             return scanType;
@@ -135,7 +132,7 @@ public class ApiResponse {
             return language;
         }
 
-        public void setLanguage(String status) {
+        public void setLanguage(String language) {
             this.language = language;
         }
 
@@ -163,5 +160,4 @@ public class ApiResponse {
             this.totalPackages = totalPackages;
         }
     }
-
 }

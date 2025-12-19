@@ -19,7 +19,7 @@ public class ScanResultAction implements Action {
 
     @Override
     public String getIconFileName() {
-//        return "clipboard.png"; // or a custom icon
+        //        return "clipboard.png"; // or a custom icon
         return "symbol-reader-outline plugin-ionicons-api"; // or a custom icon
     }
 

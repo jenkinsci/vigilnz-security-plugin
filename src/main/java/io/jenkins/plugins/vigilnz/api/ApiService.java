@@ -1,23 +1,25 @@
 package io.jenkins.plugins.vigilnz.api;
 
+import static io.jenkins.plugins.vigilnz.utils.VigilnzConfig.DEFAULT_AUTH_URL;
+import static io.jenkins.plugins.vigilnz.utils.VigilnzConfig.DEFAULT_SCAN_URL;
+
 import hudson.EnvVars;
 import hudson.model.TaskListener;
 import io.jenkins.plugins.vigilnz.models.AuthResponse;
-import net.sf.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
-
-import static io.jenkins.plugins.vigilnz.utils.VigilnzConfig.DEFAULT_AUTH_URL;
-import static io.jenkins.plugins.vigilnz.utils.VigilnzConfig.DEFAULT_SCAN_URL;
+import net.sf.json.JSONObject;
 
 public class ApiService {
 
-    /** Authenticate with API key and get access token  */
+    /**
+     * Authenticate with API key and get access token
+     */
     public static AuthResponse authenticate(String apiKey, TaskListener listener) {
         try {
             String authUrl = DEFAULT_AUTH_URL;
@@ -33,14 +35,15 @@ public class ApiService {
             String body = json.toString();
 
             try (OutputStream os = conn.getOutputStream()) {
-                os.write(body.getBytes());
+                os.write(body.getBytes(StandardCharsets.UTF_8));
             }
 
             int responseCode = conn.getResponseCode();
 
             if (responseCode != 200) {
                 // Read error response
-                try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getErrorStream()))) {
+                try (BufferedReader reader =
+                        new BufferedReader(new InputStreamReader(conn.getErrorStream(), StandardCharsets.UTF_8))) {
                     StringBuilder errorResponse = new StringBuilder();
                     String line;
                     while ((line = reader.readLine()) != null) {
@@ -53,7 +56,8 @@ public class ApiService {
 
             // Read success response
             StringBuilder response = new StringBuilder();
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+            try (BufferedReader reader =
+                    new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     response.append(line);
@@ -75,7 +79,8 @@ public class ApiService {
         }
     }
 
-    public static String triggerScan(String token, String targetFile, List<String> scanTypes, EnvVars env, TaskListener listener) {
+    public static String triggerScan(
+            String token, String targetFile, List<String> scanTypes, EnvVars env, TaskListener listener) {
         try {
             // Step 1: Authenticate and get access token
             AuthResponse authResponse = authenticate(token, listener);
@@ -129,19 +134,20 @@ public class ApiService {
             String body = json.toString();
 
             try (OutputStream os = conn.getOutputStream()) {
-                os.write(body.getBytes());
+                os.write(body.getBytes(StandardCharsets.UTF_8));
             }
 
             int responseCode = conn.getResponseCode();
             StringBuilder response = new StringBuilder();
             // Print the response to output
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(responseCode >= 400 ? conn.getErrorStream() : conn.getInputStream()))) {
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+                    responseCode >= 400 ? conn.getErrorStream() : conn.getInputStream(), StandardCharsets.UTF_8))) {
 
                 String line;
                 while ((line = reader.readLine()) != null) {
                     response.append(line);
                 }
-//                listener.getLogger().println("API Response Body: " + response);
+                //                listener.getLogger().println("API Response Body: " + response);
             }
 
             return response.toString();
@@ -151,5 +157,4 @@ public class ApiService {
             return null;
         }
     }
-
 }

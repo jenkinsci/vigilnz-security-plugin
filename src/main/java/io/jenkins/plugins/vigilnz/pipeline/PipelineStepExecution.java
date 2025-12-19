@@ -12,17 +12,18 @@ import io.jenkins.plugins.vigilnz.api.ApiService;
 import io.jenkins.plugins.vigilnz.credentials.TokenCredentials;
 import io.jenkins.plugins.vigilnz.models.ApiResponse;
 import io.jenkins.plugins.vigilnz.ui.ScanResultAction;
-import org.jenkinsci.plugins.workflow.steps.StepContext;
-import org.jenkinsci.plugins.workflow.steps.StepExecution;
-
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import org.jenkinsci.plugins.workflow.steps.StepContext;
+import org.jenkinsci.plugins.workflow.steps.StepExecution;
 
 public class PipelineStepExecution extends StepExecution {
+    private static final long serialVersionUID = 1L;
+
     private final transient PipelineStep step;
 
     public PipelineStepExecution(PipelineStep step, StepContext context) {
@@ -39,7 +40,8 @@ public class PipelineStepExecution extends StepExecution {
             }
 
             // Read HEAD
-            String head = Files.readString(Paths.get(gitDir.getAbsolutePath(), "HEAD"), StandardCharsets.UTF_8).trim();
+            String head = Files.readString(Paths.get(gitDir.getAbsolutePath(), "HEAD"), StandardCharsets.UTF_8)
+                    .trim();
             String branch = null;
             String commit = null;
 
@@ -90,18 +92,13 @@ public class PipelineStepExecution extends StepExecution {
             return false;
         }
 
-        TokenCredentials creds =
-                CredentialsProvider.findCredentialById(
-                        credentialsId,
-                        TokenCredentials.class,
-                        run
-                );
+        TokenCredentials creds = CredentialsProvider.findCredentialById(credentialsId, TokenCredentials.class, run);
 
         listener.getLogger().println("------ Pipeline Method ------");
 
         if (creds != null) {
-//            listener.getLogger().println("Token ID: " + creds.getTokenId());
-//            listener.getLogger().println("Description: " + creds.getTokenDescription());
+            //            listener.getLogger().println("Token ID: " + creds.getTokenId());
+            //            listener.getLogger().println("Description: " + creds.getTokenDescription());
             EnvVars env = getContext().get(EnvVars.class);
 
             FilePath ws = getContext().get(FilePath.class);
