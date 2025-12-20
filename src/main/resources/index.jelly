@@ -14,6 +14,6 @@
         <li>Multi-scan type support with flexible configuration</li>
     </ul>
     <p>
-        For more information, visit <a href="https://github.com/${project.url}">GitHub</a>
+        For more information, visit <a href="https://github.com/${project.url}">GitHub</a>.
     </p>
 </div>
