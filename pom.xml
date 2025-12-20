@@ -12,7 +12,7 @@
 
     <groupId>io.jenkins.plugins</groupId>
     <artifactId>vigilnz-security</artifactId>
-    <version>${revision}${changelist}</version>
+    <version>${revision}.${changelist}</version>
     <packaging>hpi</packaging>
 
     <!--  Plugin Name  -->
@@ -44,13 +44,9 @@
     <!--    </developers>-->
 
     <properties>
-        <revision>1.0</revision>
-
-        <!--    <changelist>999999-SNAPSHOT</changelist>-->
-        <changelist></changelist>
+        <revision>1</revision>
+        <changelist>999999-SNAPSHOT</changelist>
         <!-- https://www.jenkins.io/doc/developer/plugin-development/choosing-jenkins-baseline/ -->
-        <skipTests>true</skipTests>
-        <jacoco.skip>true</jacoco.skip>
         <jenkins.baseline>2.516</jenkins.baseline>
         <jenkins.version>${jenkins.baseline}.3</jenkins.version>
         <gitHubRepo>jenkinsci/${project.artifactId}-plugin</gitHubRepo>
