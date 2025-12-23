@@ -8,8 +8,8 @@
     <f:entry field="scanTypes" title="Scan Types" description="Select at least one scan type (required)">
         <div style="display:flex;gap:20px;">
             <f:checkbox field="cveScan" title="SCA Scan"/>
-            <f:checkbox field="sastScan" title="SAST Scan"/>
             <f:checkbox field="sbomScan" title="SBOM Scan"/>
+            <f:checkbox field="sastScan" title="SAST Scan"/>
         </div>
     </f:entry>
     <f:entry title="Target File" field="targetFile">
