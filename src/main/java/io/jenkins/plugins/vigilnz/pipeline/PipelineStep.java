@@ -5,9 +5,12 @@ import hudson.FilePath;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import jakarta.annotation.Nonnull;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.jenkinsci.plugins.workflow.steps.Step;
 import org.jenkinsci.plugins.workflow.steps.StepContext;
 import org.jenkinsci.plugins.workflow.steps.StepDescriptor;
@@ -27,7 +30,8 @@ public class PipelineStep extends Step {
 
         // Split comma-separated string into a list
         if (scanTypes != null && !scanTypes.trim().isEmpty()) {
-            this.scanTypes = Arrays.asList(scanTypes.split("\\s*,\\s*"));
+            List<String> scanTypeList = Arrays.asList(scanTypes.split("\\s*,\\s*"));
+            this.scanTypes = scanTypeList.stream().map(s -> s.equalsIgnoreCase("sca") ? "cve" : s).collect(Collectors.toList());
         } else {
             this.scanTypes = List.of();
         }
