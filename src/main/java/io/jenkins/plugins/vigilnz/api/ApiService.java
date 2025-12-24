@@ -6,7 +6,6 @@ import static io.jenkins.plugins.vigilnz.utils.VigilnzConfig.DEFAULT_SCAN_URL;
 import hudson.EnvVars;
 import hudson.model.TaskListener;
 import io.jenkins.plugins.vigilnz.models.AuthResponse;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -14,7 +13,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-
 import net.sf.json.JSONObject;
 
 public class ApiService {
@@ -44,7 +42,7 @@ public class ApiService {
             if (responseCode != 200) {
                 // Read error response
                 try (BufferedReader reader =
-                             new BufferedReader(new InputStreamReader(conn.getErrorStream(), StandardCharsets.UTF_8))) {
+                        new BufferedReader(new InputStreamReader(conn.getErrorStream(), StandardCharsets.UTF_8))) {
                     StringBuilder errorResponse = new StringBuilder();
                     String line;
                     while ((line = reader.readLine()) != null) {
@@ -58,7 +56,7 @@ public class ApiService {
             // Read success response
             StringBuilder response = new StringBuilder();
             try (BufferedReader reader =
-                         new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
+                    new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     response.append(line);

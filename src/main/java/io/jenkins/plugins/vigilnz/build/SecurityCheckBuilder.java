@@ -19,11 +19,9 @@ import io.jenkins.plugins.vigilnz.api.ApiService;
 import io.jenkins.plugins.vigilnz.credentials.TokenCredentials;
 import io.jenkins.plugins.vigilnz.models.ApiResponse;
 import io.jenkins.plugins.vigilnz.ui.ScanResultAction;
-
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
