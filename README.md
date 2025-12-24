@@ -3,41 +3,65 @@
 [![Jenkins Plugin](https://img.shields.io/jenkins/plugin/v/vigilnz-security.svg)](https://plugins.jenkins.io/vigilnz-security)
 [![Jenkins Plugin Installs](https://img.shields.io/jenkins/plugin/i/vigilnz-security.svg?color=blue)](https://plugins.jenkins.io/vigilnz-security)
 
-Vigilnz Security Plugin integrates comprehensive security scanning capabilities into Jenkins CI/CD pipelines. Run CVE, SAST, SBOM, and other security scans as part of your build process.
+Vigilnz Security Plugin integrates comprehensive security scanning capabilities into Jenkins CI/CD pipelines.
 
 ## Features
 
-- 🔒 **Multiple Scan Types**: Support for CVE, SAST, SBOM, and more
-- 🔐 **Secure Credential Management**: Store and manage Vigilnz API credentials securely
-- 🚀 **Freestyle & Pipeline Support**: Works with both traditional and modern Jenkins jobs
-- 📊 **Detailed Results**: View scan results directly in the Jenkins build sidebar
-- ⚙️ **Flexible Configuration**: Select which scan types to run per build
-- 🔄 **Credential Management**: Automatic refresh and caching
+-  **Multiple Scan Types**: Support for SCA, SAST, SBOM, and more
+-  **Secure Credential Management**: Store and manage Vigilnz API credentials securely
+-  **Freestyle & Pipeline Support**: Works with both traditional and modern Jenkins jobs
+-  **Detailed Results**: View scan results directly in the Jenkins build sidebar
+- ️ **Flexible Configuration**: Select which scan types to run per build
+-  **Credential Management**: Automatic refresh and caching
 
 ## Requirements
 
-- Jenkins 2.516.3 or later
+- Jenkins 2.528.3 or later
 - Java 17 or later
 - Vigilnz API access (API key required)
 
+## Usage
+To use the plugin you will need to take the following steps in order:
+
+1. [Install the Vigilnz Security Plugin](#installation)
+2. [Generate API Key From Vigilnz Security](#api-Key-generation)
+3. [Configure a Vigilnz API Key Credential](#configure-vigilnz-credentials)
+4. [Add Vigilnz Security to your Project](#add-vigilnz-security-to-your-project)
+5. [View Your Vigilnz Scan Report](#viewing-results)
+
 ## Installation
 
-### From Jenkins Update Center
+### Option A: From Jenkins Update Center
 
 1. Go to **Manage Jenkins** → **Manage Plugins**
 2. Search for "Vigilnz Security"
 3. Click **Install without restart** or **Download now and install after restart**
 
-### Manual Installation
+![Plugin Manager search result](src/main/resources/images/search_result.png)
 
-1. Download the latest `.hpi` file from [GitHub Releases](https://github.com/your-org/vigilnz-security-plugin/releases)
+### Option B: Manual Upload
+
+1. Download the latest `.hpi` file from [GitHub Releases](https://github.com/jenkinsci/vigilnz-security-plugin/releases)
 2. Go to **Manage Jenkins** → **Manage Plugins** → **Advanced**
 3. Upload the `.hpi` file under **Upload Plugin**
 4. Restart Jenkins
 
-## Getting Started
+![Upload Plugin screen](src/main/resources/images/manual_upload.png)
 
-### 1. Configure Vigilnz Credentials
+
+## API Key Generation
+
+### To generate your Vigilnz API Key:
+
+1. Login to the [Vigilnz](https://vigilnz.com/) application.
+2. Navigate to Settings → API Keys.
+3. Click Generate New Key or View API Key (If exits).
+4. Copy the API Key and store it securely.
+
+![API Key generation screen](src/main/resources/images/vigilnz_api.png)
+
+
+## Configure Vigilnz Credentials
 
 1. Go to **Manage Jenkins** → **Manage Credentials**
 2. Click **Add Credentials**
@@ -48,17 +72,24 @@ Vigilnz Security Plugin integrates comprehensive security scanning capabilities 
    - **Description**: Description for this credential
 5. Click **OK**
 
-### 2. Use in Freestyle Job
+![Add Vigilnz credential](src/main/resources/images/vigilnz_credential.png)
+
+## Add Vigilnz Security to your Project
+
+### 1. Using Vigilnz in Freestyle Jobs
 
 1. Create a new Freestyle project or edit an existing one
 2. In **Build Steps**, click **Add build step** → **Invoke Vigilnz Security Task**
 3. Configure:
    - **Credentials**: Select your Vigilnz credential
    - **Target File**: (Optional) File or path to scan
-   - **Scan Types**: Select at least one scan type (CVE, SAST, SBOM)
+   - **Scan Types**: Select at least one scan type (SCA, SAST, SBOM)
 4. Save and run the build
 
-### 3. Use in Pipeline
+![Freestyle job configuration](src/main/resources/images/freestyle.png)
+
+
+### 2. Using Vigilnz in Pipeline Jobs
 
 ```groovy
 pipeline {
@@ -69,7 +100,7 @@ pipeline {
             steps {
                 vigilnzScan(
                     credentialsId: 'my-vigilnz-creds',
-                    scanTypes: 'cve,sast,sbom'
+                    scanTypes: 'sca,sast,sbom'
                 )
             }
         }
@@ -78,21 +109,35 @@ pipeline {
 
 ```
 
+![Pipeline job configuration](src/main/resources/images/pipeline.png)
+
+## Parameters Reference
+
+| Parameter     | Required | Description                           |
+|---------------|----------|---------------------------------------|
+| credentialsId | True     | ID of Vigilnz credential              |
+| scanTypes     | True     | Comma-separated list: `sca,sast,sbom` |
+
+[//]: # (| targetFile    | False    | File/path to scan &#40;optional&#41;          |)
+
+
 ## Configuration
 
 ### Scan Types
 
-- **CVE**: Common Vulnerabilities and Exposures scan
-- **SAST**: Static Application Security Testing
+- **SCA**: Software Composition Analysis
 - **SBOM**: Software Bill of Materials
+- **SAST**: Static Application Security Testing
 
 ## Viewing Results
 
-After a build completes:
+### After a build completes:
 
 1. **Sidebar Summary**: View a quick summary in the build page sidebar
-2. **Full Details**: Click "View Details →" in the sidebar to see complete scan results
+2. **Full Details**: Click "Vigilnz Scan Results" in the sidebar to see complete scan results
 3. **Console Output**: Check the build console for detailed scan logs
+
+![Vigilnz Scan Result screen](src/main/resources/images/vigilnz_result.png)
 
 ## Pipeline Examples
 
@@ -101,7 +146,7 @@ After a build completes:
 ```groovy
 vigilnzScan(
     credentialsId: 'my-vigilnz-token',
-    scanTypes: 'cve'
+    scanTypes: 'sca'
 )
 ```
 
@@ -110,7 +155,7 @@ vigilnzScan(
 ```groovy
 vigilnzScan(
     credentialsId: 'my-vigilnz-token',
-    scanTypes: 'cve,sast,sbom'
+    scanTypes: 'sca,sast,sbom'
 )
 ```
 
@@ -126,7 +171,7 @@ pipeline {
                 withCredentials([string(credentialsId: 'vigilnz-token', variable: 'VIGILNZ_TOKEN')]) {
                     vigilnzScan(
                         credentialsId: 'vigilnz-token',
-                        scanTypes: 'cve,sast'
+                        scanTypes: 'sca,sast'
                     )
                 }
             }
@@ -141,7 +186,7 @@ pipeline {
 
 - Verify your API key is correct
 - Check that the authentication URL is accessible
-- Ensure the token has not expired
+- Ensure the API Key has not expired
 
 ### Scan Types Not Selected
 
@@ -156,20 +201,21 @@ pipeline {
 
 ## Support
 
-- **Issues**: Report issues on [GitHub Issues](https://github.com/your-org/vigilnz-security-plugin/issues)
-- **Documentation**: [Plugin Wiki](https://github.com/your-org/vigilnz-security-plugin/wiki)
-- **Email**: support@vigilnz.com
+- **Issues**: Report issues on [GitHub Issues](https://github.com/jenkinsci/vigilnz-security-plugin/issues)
+- **Documentation**: [Plugin](https://github.com/jenkinsci/vigilnz-security-plugin)
 
-## Contributing
+[//]: # (- **Email**: support@vigilnz.com)
 
-Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+[//]: # (## Contributing)
+
+[//]: # (Contributions are welcome! Please see [CONTRIBUTING.md]&#40;CONTRIBUTING.md&#41; for guidelines.)
 
 ## Changelog
 
 ### Version 1.0
 
 - Initial release
-- Support for CVE, SAST, SBOM scan types
+- Support for SCA, SAST, SBOM scan types
 - Freestyle and Pipeline job support
 - Secure credential management
 - Build sidebar results display

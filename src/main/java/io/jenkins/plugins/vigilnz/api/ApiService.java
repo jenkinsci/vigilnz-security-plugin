@@ -22,8 +22,7 @@ public class ApiService {
      */
     public static AuthResponse authenticate(String apiKey, TaskListener listener) {
         try {
-            String authUrl = DEFAULT_AUTH_URL;
-            URL url = new URL(authUrl);
+            URL url = new URL(DEFAULT_AUTH_URL);
 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
@@ -95,8 +94,7 @@ public class ApiService {
             listener.getLogger().println("Using access token for multi-scan API call...");
 
             // Step 2: Call multi-scan API with access token
-            String scanUrl = DEFAULT_SCAN_URL;
-            URL url = new URL(scanUrl);
+            URL url = new URL(DEFAULT_SCAN_URL);
 
             String branch = env.get("GIT_BRANCH");
             String repoUrl = env.get("GIT_URL");
@@ -105,7 +103,6 @@ public class ApiService {
             listener.getLogger().println("Branch: " + branch);
             listener.getLogger().println("Repo URL: " + repoUrl);
             listener.getLogger().println("Commit: " + commit);
-            listener.getLogger().println("Scan Url: " + scanUrl);
 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 

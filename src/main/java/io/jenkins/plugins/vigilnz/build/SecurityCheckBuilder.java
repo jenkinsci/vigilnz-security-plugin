@@ -204,6 +204,7 @@ public class SecurityCheckBuilder extends Builder {
                 }
                 items.add(label, c.getId());
             }
+            items.add("None", "");
             return items;
         }
 
