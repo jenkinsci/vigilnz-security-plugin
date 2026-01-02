@@ -11,6 +11,7 @@ public class VigilnzConfig {
 
     private static String devBaseUrl = "https://devapi.vigilnz.com";
     private static String prodBaseUrl = "https://api.vigilnz.com";
+    private static String demoBaseUrl = "https://demoapi.vigilnz.com";
     private static String baseUrl = "https://api.vigilnz.com";
 
     public static String getBaseUrl() {
@@ -20,6 +21,9 @@ public class VigilnzConfig {
     public static void setBaseUrl(String newBaseUrl) {
         if (newBaseUrl.equalsIgnoreCase("dev")) {
             baseUrl = devBaseUrl;
+            return;
+        }else if(newBaseUrl.equalsIgnoreCase("demo")){
+            baseUrl = demoBaseUrl;
             return;
         } else {
             baseUrl = prodBaseUrl;
