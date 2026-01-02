@@ -172,7 +172,7 @@ public class SecurityCheckBuilder extends Builder {
                 build.addAction(new ScanResultAction(result));
             } else {
                 listener.getLogger().println("API call failed, no action added.");
-                return false;
+                // return false;
             }
         } catch (Exception e) {
             listener.error("Scan failed");
