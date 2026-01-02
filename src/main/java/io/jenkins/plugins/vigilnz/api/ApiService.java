@@ -1,11 +1,9 @@
 package io.jenkins.plugins.vigilnz.api;
 
-import static io.jenkins.plugins.vigilnz.utils.VigilnzConfig.DEFAULT_AUTH_URL;
-import static io.jenkins.plugins.vigilnz.utils.VigilnzConfig.DEFAULT_SCAN_URL;
-
 import hudson.EnvVars;
 import hudson.model.TaskListener;
 import io.jenkins.plugins.vigilnz.models.AuthResponse;
+import io.jenkins.plugins.vigilnz.utils.VigilnzConfig;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -22,12 +20,14 @@ public class ApiService {
      */
     public static AuthResponse authenticate(String apiKey, TaskListener listener) {
         try {
-            URL url = new URL(DEFAULT_AUTH_URL);
+            URL url = new URL(VigilnzConfig.getAuthUrl());
 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setDoOutput(true);
+
+            listener.getLogger().println("Triggering authentication API call " + VigilnzConfig.getBaseUrl());
 
             JSONObject json = new JSONObject();
             json.put("apiKey", apiKey);
@@ -94,7 +94,7 @@ public class ApiService {
             listener.getLogger().println("Using access token for multi-scan API call...");
 
             // Step 2: Call multi-scan API with access token
-            URL url = new URL(DEFAULT_SCAN_URL);
+            URL url = new URL(VigilnzConfig.getScanUrl());
 
             String branch = env.get("GIT_BRANCH");
             String repoUrl = env.get("GIT_URL");
@@ -122,6 +122,8 @@ public class ApiService {
             // Send scan types as array
             json.put("scanTypes", scanTypes);
             json.put("gitRepoUrl", repoUrl);
+            json.put("branch", branch);
+
             // Optional fields
             if (targetFile != null && !targetFile.trim().isEmpty()) {
                 json.put("project", targetFile);
@@ -144,7 +146,7 @@ public class ApiService {
                 while ((line = reader.readLine()) != null) {
                     response.append(line);
                 }
-                //                listener.getLogger().println("API Response Body: " + response);
+                // listener.getLogger().println("API Response Body: " + response);
             }
 
             return response.toString();
