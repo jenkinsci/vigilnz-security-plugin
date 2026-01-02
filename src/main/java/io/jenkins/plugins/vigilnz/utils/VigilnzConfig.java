@@ -22,7 +22,7 @@ public class VigilnzConfig {
         if (newBaseUrl.equalsIgnoreCase("dev")) {
             baseUrl = devBaseUrl;
             return;
-        }else if(newBaseUrl.equalsIgnoreCase("demo")){
+        } else if (newBaseUrl.equalsIgnoreCase("demo")) {
             baseUrl = demoBaseUrl;
             return;
         } else {
