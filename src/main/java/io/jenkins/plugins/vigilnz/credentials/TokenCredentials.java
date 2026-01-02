@@ -59,6 +59,7 @@ public class TokenCredentials extends BaseStandardCredentials implements StringC
             ListBoxModel items = new ListBoxModel();
             items.add("Development", "dev");
             items.add("Production", "prod");
+            items.add("Demo", "demo");
             return items;
         }
     }
