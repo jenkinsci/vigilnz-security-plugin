@@ -7,7 +7,7 @@ Vigilnz Security Plugin integrates comprehensive security scanning capabilities 
 
 ## Features
 
--  **Multiple Scan Types**: Support for SCA, SAST, SBOM, and more
+-  **Multiple Scan Types**: Support for SCA, SBOM, SAST and more
 -  **Secure Credential Management**: Store and manage Vigilnz API credentials securely
 -  **Freestyle & Pipeline Support**: Works with both traditional and modern Jenkins jobs
 -  **Detailed Results**: View scan results directly in the Jenkins build sidebar
@@ -128,6 +128,8 @@ pipeline {
 - **SCA**: Software Composition Analysis
 - **SBOM**: Software Bill of Materials
 - **SAST**: Static Application Security Testing
+- **IAC**: Infrastructure as Code — checks configuration files (Terraform, Kubernetes, etc.) for misconfigurations.
+- **SECRET SCAN**: Secret Detection — finds hardcoded credentials, API keys, and sensitive information in source code.
 
 ## Viewing Results
 
@@ -155,7 +157,7 @@ vigilnzScan(
 ```groovy
 vigilnzScan(
     credentialsId: 'my-vigilnz-token',
-    scanTypes: 'sca,sast,sbom'
+    scanTypes: 'sca,sast,sbom,iac,secret'
 )
 ```
 
@@ -215,7 +217,7 @@ pipeline {
 ### Version 1.0
 
 - Initial release
-- Support for SCA, SAST, SBOM scan types
+- Support for SCA, SAST, SBOM, IAC, Secret scan types
 - Freestyle and Pipeline job support
 - Secure credential management
 - Build sidebar results display
