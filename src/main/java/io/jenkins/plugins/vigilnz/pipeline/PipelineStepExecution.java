@@ -12,6 +12,7 @@ import io.jenkins.plugins.vigilnz.api.ApiService;
 import io.jenkins.plugins.vigilnz.credentials.TokenCredentials;
 import io.jenkins.plugins.vigilnz.models.ApiResponse;
 import io.jenkins.plugins.vigilnz.ui.ScanResultAction;
+import io.jenkins.plugins.vigilnz.utils.VigilnzConfig;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -97,8 +98,8 @@ public class PipelineStepExecution extends StepExecution {
         listener.getLogger().println("------ Pipeline Method ------");
 
         if (creds != null) {
-            //            listener.getLogger().println("Token ID: " + creds.getTokenId());
-            //            listener.getLogger().println("Description: " + creds.getTokenDescription());
+            // listener.getLogger().println("Token ID: " + creds.getTokenId());
+            // listener.getLogger().println("Description: " + creds.getTokenDescription());
             EnvVars env = getContext().get(EnvVars.class);
 
             FilePath ws = getContext().get(FilePath.class);
@@ -108,6 +109,10 @@ public class PipelineStepExecution extends StepExecution {
             }
 
             String token = creds.getToken().getPlainText();
+
+            // Set base URL based on environment selection
+            VigilnzConfig.setBaseUrl(creds.getEnvironment());
+
             List<String> scanTypes = step.getScanTypes();
 
             // Validate at least one scan type is selected
@@ -127,6 +132,7 @@ public class PipelineStepExecution extends StepExecution {
                     run.addAction(new ScanResultAction(result));
                 } else {
                     listener.getLogger().println("API call failed, no action added.");
+                    return false;
                 }
             } catch (Exception e) {
                 listener.error("Scan failed");

@@ -10,6 +10,8 @@
             <f:checkbox field="cveScan" title="SCA Scan"/>
             <f:checkbox field="sbomScan" title="SBOM Scan"/>
             <f:checkbox field="sastScan" title="SAST Scan"/>
+            <f:checkbox field="iac" title="IAC Scan"/>
+            <f:checkbox field="secret" title="Secret Scan"/>
         </div>
     </f:entry>
     <f:entry title="Target File" field="targetFile">

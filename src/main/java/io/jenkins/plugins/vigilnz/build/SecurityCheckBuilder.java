@@ -19,6 +19,7 @@ import io.jenkins.plugins.vigilnz.api.ApiService;
 import io.jenkins.plugins.vigilnz.credentials.TokenCredentials;
 import io.jenkins.plugins.vigilnz.models.ApiResponse;
 import io.jenkins.plugins.vigilnz.ui.ScanResultAction;
+import io.jenkins.plugins.vigilnz.utils.VigilnzConfig;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -37,6 +38,8 @@ public class SecurityCheckBuilder extends Builder {
     private boolean cveScan;
     private boolean sastScan;
     private boolean sbomScan;
+    private boolean iacScan;
+    private boolean secretScan;
 
     @DataBoundConstructor
     public SecurityCheckBuilder(String credentialsId) {
@@ -83,11 +86,31 @@ public class SecurityCheckBuilder extends Builder {
         this.sbomScan = sbomScan;
     }
 
+    public boolean isSecretScan() {
+        return secretScan;
+    }
+
+    @DataBoundSetter
+    public void setSecretScan(boolean secretScan) {
+        this.secretScan = secretScan;
+    }
+
+    public boolean isIacScan() {
+        return iacScan;
+    }
+
+    @DataBoundSetter
+    public void setIacScan(boolean iacScan) {
+        this.iacScan = iacScan;
+    }
+
     public List<String> getScanTypes() {
         List<String> types = new java.util.ArrayList<>();
         if (cveScan) types.add("cve");
         if (sastScan) types.add("sast");
         if (sbomScan) types.add("sbom");
+        if (iacScan) types.add("iac");
+        if (secretScan) types.add("secret");
         return types;
     }
 
@@ -128,8 +151,11 @@ public class SecurityCheckBuilder extends Builder {
         // Get the actual token value from the credential
         String tokenText = creds.getToken().getPlainText();
 
-        //        listener.getLogger().println("Credential ID: " + credentialsId);
-        //        listener.getLogger().println("Your Token from Plugin: " + tokenText);
+        // Set base URL based on environment selection
+        VigilnzConfig.setBaseUrl(creds.getEnvironment());
+
+        // listener.getLogger().println("Credential ID: " + credentialsId);
+        // listener.getLogger().println("Your Token from Plugin: " + tokenText);
         if (targetFile != null && !targetFile.trim().isEmpty()) {
             listener.getLogger().println("Target File: " + targetFile);
         } else {
@@ -146,6 +172,7 @@ public class SecurityCheckBuilder extends Builder {
                 build.addAction(new ScanResultAction(result));
             } else {
                 listener.getLogger().println("API call failed, no action added.");
+                return false;
             }
         } catch (Exception e) {
             listener.error("Scan failed");
