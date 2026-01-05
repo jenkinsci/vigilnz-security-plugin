@@ -78,6 +78,41 @@ public class ApiService {
         }
     }
 
+    public static String fetchScanResults(String token, JSONObject scanInfo, TaskListener listener) {
+        try {
+
+            // Step 1: Call multi-scan API with resultMethod:true
+            URL url = new URL(VigilnzConfig.getScanUrl());
+
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Authorization", token);
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setDoOutput(true);
+
+            String body = scanInfo.toString();
+            try (OutputStream os = conn.getOutputStream()) {
+                os.write(body.getBytes(StandardCharsets.UTF_8));
+            }
+
+            int responseCode = conn.getResponseCode();
+            StringBuilder response = new StringBuilder();
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+                    responseCode >= 400 ? conn.getErrorStream() : conn.getInputStream(), StandardCharsets.UTF_8))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                }
+            }
+
+            return response.toString();
+
+        } catch (Exception e) {
+            listener.getLogger().println("API Error (fetch results): " + e.getMessage());
+            return null;
+        }
+    }
+
     public static String triggerScan(
             String token, String targetFile, List<String> scanTypes, EnvVars env, TaskListener listener) {
         try {
@@ -145,10 +180,18 @@ public class ApiService {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     response.append(line);
+                    listener.getLogger().println("API Body: ===--- " + line);
                 }
                 // listener.getLogger().println("API Response Body: " + response);
             }
+            String accessTokenValue = tokenType + " " + accessToken;
 
+            JSONObject scanInfo = new JSONObject();
+            scanInfo.put("scanTypes", scanTypes);
+            scanInfo.put("scanTargetIds", scanTypes);
+            scanInfo.put("resultMethod", true);
+
+            fetchScanResults(accessTokenValue, scanInfo, listener);
             return response.toString();
 
         } catch (Exception e) {

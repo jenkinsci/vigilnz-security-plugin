@@ -9,7 +9,8 @@ public class VigilnzConfig {
     // public static final String DEFAULT_SCAN_URL = DEFAULT_BASE_URL +
     // "/scan-targets/multi-scan";
 
-    private static String devBaseUrl = "https://devapi.vigilnz.com";
+    private static String devBaseUrl = "http://localhost:1337";
+    // private static String devBaseUrl = "https://devapi.vigilnz.com";
     private static String prodBaseUrl = "https://api.vigilnz.com";
     private static String demoBaseUrl = "https://demoapi.vigilnz.com";
     private static String baseUrl = "https://api.vigilnz.com";
