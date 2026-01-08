@@ -169,7 +169,7 @@ public class SecurityCheckBuilder extends Builder {
             result = ApiService.triggerScan(tokenText, targetFile, scanTypes, env, listener);
             // Attach results to build
             if (result != null && !result.isEmpty()) {
-                build.addAction(new ScanResultAction(result));
+                build.addAction(new ScanResultAction(result, credentialsId));
             } else {
                 listener.getLogger().println("API call failed, no action added.");
                 // return false;
@@ -177,7 +177,7 @@ public class SecurityCheckBuilder extends Builder {
         } catch (Exception e) {
             listener.error("Scan failed");
             attachResult(build, buildErrorResponse("Scan failed: " + e.getMessage()));
-            build.addAction(new ScanResultAction(new ApiResponse().toString()));
+            build.addAction(new ScanResultAction(new ApiResponse().toString(), ""));
             return false;
         }
 
@@ -186,7 +186,7 @@ public class SecurityCheckBuilder extends Builder {
 
     private void attachResult(AbstractBuild build, String json) {
         try {
-            build.addAction(new ScanResultAction(json));
+            build.addAction(new ScanResultAction(json, ""));
         } catch (Exception ignored) {
             // Swallow to avoid masking original error
         }

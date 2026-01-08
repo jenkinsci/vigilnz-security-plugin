@@ -1,20 +1,156 @@
 package io.jenkins.plugins.vigilnz.ui;
 
+import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hudson.model.Action;
+import hudson.model.Run;
+import hudson.model.TaskListener;
+import io.jenkins.plugins.vigilnz.api.ApiService;
+import io.jenkins.plugins.vigilnz.credentials.TokenCredentials;
 import io.jenkins.plugins.vigilnz.models.ApiResponse;
+import io.jenkins.plugins.vigilnz.utils.VigilnzConfig;
+import java.util.List;
+import jenkins.model.RunAction2;
+import net.sf.json.JSONObject;
+import org.kohsuke.stapler.export.ExportedBean;
 
-public class ScanResultAction implements Action {
-    private final ApiResponse response;
+@ExportedBean
+public class ScanResultAction implements RunAction2 {
+    private ApiResponse response;
+    private transient Run<?, ?> run;
 
-    public ScanResultAction(String scanSummary) throws JsonProcessingException {
-
+    public ScanResultAction(String scanSummary, String apiKeyId) throws JsonProcessingException {
         // Convert JSON string to ApiResponse
         ObjectMapper mapper = new ObjectMapper();
         ApiResponse apiResponse;
         apiResponse = mapper.readValue(scanSummary, ApiResponse.class);
+        apiResponse.setApiKey(apiKeyId);
+        setResponse(apiResponse);
         this.response = apiResponse;
+    }
+
+    //    public HttpResponse doGetScanResults() {
+    //        try {
+    //            JSONObject payload = new JSONObject();
+    //            payload.put("scanDetails", response.getScanInfo());
+    //            payload.put("resultMethod", true);
+    //
+    //            TokenCredentials creds =
+    //                    CredentialsProvider.findCredentialById(response.getApiKey(), TokenCredentials.class, run);
+    //
+    //            if (creds == null) {
+    //                return HttpResponses.error(500, "Credentials not found");
+    //            }
+    //
+    //            String apiResult =
+    //                    ApiService.fetchScanResults(creds.getToken().getPlainText(), payload, TaskListener.NULL,
+    // true);
+    //            payload.put("apiResult", JSONObject.fromObject(apiResult));
+    //
+    //            ObjectMapper mapper = new ObjectMapper();
+    //            ApiResponse apiResponse;
+    //            apiResponse = mapper.readValue(apiResult, ApiResponse.class);
+    //            apiResponse.setApiKey(response.getApiKey());
+    //            setResponse(apiResponse);
+    //
+    //            return HttpResponses.okJSON(JSONObject.fromObject(apiResult));
+    //        } catch (Exception e) {
+    //            return HttpResponses.error(500, "Error" + e);
+    //        }
+    //    }
+
+    public boolean getIsScanCompleted() {
+        try {
+            // Checking if the result is completed or not
+            boolean allCompleted = isAllCompleted();
+
+            //            if (allCompleted) {
+            //                return true;
+            //            }
+
+            JSONObject payload = new JSONObject();
+            payload.put("scanDetails", response.getScanInfo());
+            payload.put("resultMethod", true);
+
+            TokenCredentials creds =
+                    CredentialsProvider.findCredentialById(response.getApiKey(), TokenCredentials.class, run);
+
+            if (creds == null) {
+                return false;
+            }
+            VigilnzConfig.setBaseUrl(creds.getEnvironment());
+            String apiResult =
+                    ApiService.fetchScanResults(creds.getToken().getPlainText(), payload, TaskListener.NULL, true);
+
+            ObjectMapper mapper = new ObjectMapper();
+            ApiResponse apiResponse;
+            apiResponse = mapper.readValue(apiResult, ApiResponse.class);
+            apiResponse.setApiKey(response.getApiKey());
+            setResponse(apiResponse);
+
+            return allCompleted;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private boolean isAllCompleted() {
+        List<ApiResponse.ScanResults> scanResultsList = response.getScanResults();
+        List<ApiResponse.ScanInfo> scanInfoList = response.getScanInfo();
+
+        if (scanResultsList == null || scanResultsList.isEmpty()) {
+            return false; // nothing to check
+        }
+
+        for (ApiResponse.ScanInfo scanInfo : scanInfoList) {
+            for (ApiResponse.ScanResults scanResults : scanResultsList) {
+                if (scanInfo.getScanTargetId().equals(scanResults.getScanTargetId())
+                        && scanInfo.getScanType().equalsIgnoreCase(scanResults.getScanType())) {
+
+                    if (!"COMPLETED".equalsIgnoreCase(scanResults.getStatus())) {
+                        return false; // found one not completed → immediately return false
+                    }
+                }
+            }
+        }
+        return true; // only reached if all matched results were completed
+    }
+
+    //
+    //    private boolean isAllCompleted() {
+    //        List<ApiResponse.ScanResults> scanResultsList = response.getScanResults();
+    //        List<ApiResponse.ScanInfo> scanInfoList = response.getScanInfo();
+    //
+    //        boolean allCompleted = false;
+    //
+    //        for (ApiResponse.ScanInfo scanInfo : scanInfoList) {
+    //            for (ApiResponse.ScanResults scanResults : scanResultsList) {
+    //                if (scanInfo.getScanTargetId() == scanResults.getScanTargetId()
+    //                        && scanInfo.getScanType().equalsIgnoreCase(scanResults.getScanType())) {
+    //
+    //                    if (!"COMPLETED".equalsIgnoreCase(scanResults.getStatus())) {
+    //                        allCompleted = false;
+    //                        break; // no need to continue if one is not completed
+    //                    }
+    //                }
+    //            }
+    //        }
+    //        return allCompleted;
+    //    }
+
+    public String getTotalFindingsBySeverity(String severity) {
+        if (response.getScanResults() == null) return "0";
+
+        int value = response.getScanResults().stream()
+                .mapToInt(res -> switch (severity.toLowerCase()) {
+                    case "critical" -> res.getDetails().getCriticalFindings();
+                    case "high" -> res.getDetails().getHighFindings();
+                    case "medium" -> res.getDetails().getMediumFindings();
+                    case "low" -> res.getDetails().getLowFindings();
+                    default -> 0;
+                })
+                .sum();
+        return String.valueOf(value);
     }
 
     @Override
@@ -35,5 +171,23 @@ public class ScanResultAction implements Action {
 
     public ApiResponse getResponse() {
         return response;
+    }
+
+    public void setResponse(ApiResponse response) {
+        this.response = response;
+    }
+
+    public Run<?, ?> getRun() {
+        return run;
+    }
+
+    @Override
+    public void onAttached(Run<?, ?> r) {
+        this.run = r;
+    }
+
+    @Override
+    public void onLoad(Run<?, ?> r) {
+        this.run = r;
     }
 }

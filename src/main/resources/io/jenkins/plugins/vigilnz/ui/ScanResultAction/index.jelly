@@ -1,108 +1,178 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:l="/lib/layout">
-    <l:layout title="Vigilnz Security Scan Results">
-        <l:main-panel>
-            <h1 style="display:flex; align-items:center; gap:10px;font-family: 'Helvetica', sans-serif;">
-                <l:icon src="symbol-vigilnz plugin-vigilnz-security" style="width:45px;height:45px;" class="icon-xlg"/>
-                Vigilnz Security Scan Results
-            </h1>
+<j:jelly xmlns:j="jelly:core" xmlns:l="/lib/layout" xmlns:st="jelly:stapler">
+    <l:layout title="Security Scan Results">
+        <!-- This gives left sidebar -->
+        <l:side-panel>
+            <st:include page="sidepanel.jelly" it="${it.run}" optional="true"/>
+        </l:side-panel>
 
-            <!-- Scan Information -->
-            <div style="margin-top: 20px;">
-                <h2>Scan Information</h2>
-                <table class="jenkins-table jenkins-table--medium" style="width: 100%;">
-                    <tr>
-                        <td class="pane-header" style="width:300px">
-                            <strong>Git Repository:</strong>
-                        </td>
-                        <td class="pane">
-                            <a href="${it.response.gitHubUrl}" target="_blank">${it.response.gitHubUrl}</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="pane-header" style="width:300px">
-                            <strong>Total Requested:</strong>
-                        </td>
-                        <td class="pane">${it.response.totalRequested}</td>
-                    </tr>
-                    <tr>
-                        <td class="pane-header" style="width:300px">
-                            <strong>Successful:</strong>
-                        </td>
-                        <td class="pane" style="color:green; font-weight:bold;">${it.response.successfulResults}</td>
-                    </tr>
-                    <tr>
-                        <td class="pane-header" style="width:300px">
-                            <strong>Failed:</strong>
-                        </td>
-                        <td class="pane" style="color:red; font-weight:bold;">${it.response.failedResults}</td>
-                    </tr>
-                    <tr>
-                        <td class="pane-header" style="width:300px">
-                            <strong>Scan Types:</strong>
-                        </td>
-                        <td class="pane" style="text-transform: uppercase;">
-                            <j:forEach var="type" items="${it.response.scanTypes}">
-                                ${type}
-                                <j:if test="${!type.equals(it.response.scanTypes[it.response.scanTypes.size()-1])}">,
-                                </j:if>
-                            </j:forEach>
-                        </td>
-                    </tr>
-                </table>
+        <script>
+            console.log("Response --- ", "${it.response}")
+        </script>
+
+        <!-- Main content -->
+        <l:main-panel>
+
+            <!-- Header -->
+            <div style="padding:20px; border-bottom:1px solid #ddd;">
+                <h1 style="display:flex; align-items:center; gap:10px;margin:0; font-family:Helvetica, sans-serif; color:#333;">
+                    <l:icon src="symbol-vigilnz plugin-vigilnz-security" style="width:45px;height:45px;" class="icon-xlg"/>
+                    Vigilnz Security Scan Results
+                </h1>
+                <p style="color:#666; margin:5px 0;">Comprehensive security analysis powered by Vigilnz</p>
+
+                <j:choose>
+                    <j:when test="${it.getIsScanCompleted()}">
+                        <!-- Show design when completed -->
+                        <h1 style="color:green;margin-bottom:10px">Scan Completed</h1>
+                        <div class="completed-box" style="font-weight:600"> All results are ready! </div>
+                    </j:when>
+                    <j:otherwise>
+                        <h1 style="color:orange;margin-bottom:10px">Scan In Progress</h1>
+                        <div class="pending-box" style="font-weight:600">
+                            Please wait, scans are still running...
+                        </div>
+                    </j:otherwise>
+                </j:choose>
+
+
+<!--                <j:if test="${it.getIsScanCompleted()}">-->
+<!--                    &lt;!&ndash; Show design when completed &ndash;&gt;-->
+<!--                    <h1 style="color:green;margin-bottom:10px">Scan Completed</h1>-->
+<!--                    <div class="completed-box" style="font-weight:600"> All results are ready! </div>-->
+<!--                </j:if>-->
+<!--                    &lt;!&ndash; Show design when not completed &ndash;&gt;-->
+<!--                    <h1 style="color:orange;margin-bottom:10px">Scan In Progress</h1>-->
+<!--                    <div class="pending-box" style="font-weight:600">-->
+<!--                        Please wait, scans are still running...-->
+<!--                    </div>-->
+<!--                </j:if>-->
+            </div>
+
+            <!-- Project Info -->
+            <div style="margin-top:20px; padding:15px; border:1px solid #eee; border-radius:6px; background:#fafafa;">
+                <h2 style="margin-top:0;">Project Information</h2>
+                <p><strong>Project Name: </strong> ${it.response.projectName}</p>
+                <p>
+                    <strong>Repository: </strong>
+                    <a href="${it.response.repoUrl}" target="_blank">${it.response.repoName}</a>
+                </p>
+            </div>
+
+            <!-- Alert Banner -->
+            <div style="margin-top:20px; padding:15px;font-weight:600; background:#ffe5e5; border:1px solid #ff9999; border-radius:6px;display:flex;justify-content:space-between;align-items:center">
+                <div>
+                    <h2 style="margin:0; color:#cc0000;">Critical Issues Found</h2>
+                    <p style="margin:8px 0;">
+                        ${it.response.scanResults.size()} scan types completed
+                    </p>
+                </div>
+                <div style="margin:8px 0;display:flex;gap:20px;align-items:center;">
+
+<!--                        <j:set var="high" value="${it.response.scanResults.stream().mapToInt(res -> res.details.highFindings).sum()}"/>-->
+<!--                        <j:set var="medium" value="${it.response.scanResults.stream().mapToInt(res -> res.details.mediumFindings).sum()}"/>-->
+<!--                        <j:set var="low" value="${it.response.scanResults.stream().mapToInt(res -> res.details.lowFindings).sum()}"/>-->
+                        <div style="display:flex;flex-direction:column;justify-center:center;align-items:center;gap:5px">
+                           <span style="color:#ef4343;font-size:18px;font-weight:bold">
+                               <j:set var="critical" value="${it.getTotalFindingsBySeverity('critical')}"/>
+                               ${critical}
+                            </span>
+                            <span>Critical</span>
+                        </div>
+                        <div style="display:flex;flex-direction:column;justify-center:center;align-items:center;gap:5px">
+                            <span style="color:#f97415;font-size:18px;font-weight:bold">
+                                <j:set var="high" value="${it.getTotalFindingsBySeverity('high')}"/>
+                                ${high}
+                            </span>
+                            <span>High</span>
+                        </div>
+                        <div style="display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px">
+                            <span style="color:#e7b008;font-size:18px;font-weight:bold">
+                                <j:set var="medium" value="${it.getTotalFindingsBySeverity('medium')}"/>
+                                ${medium}
+                            </span>
+                            <span>Medium</span>
+                        </div>
+                        <div style="display:flex;flex-direction:column;justify-center:center;align-items:center;gap:5px">
+                            <span style="color:#3c83f6;font-size:18px;font-weight:bold">
+                                <j:set var="low" value="${it.getTotalFindingsBySeverity('low')}"/>
+                                ${low}
+                            </span>
+                            <span>Low</span>
+                        </div>
+                </div>
             </div>
 
             <!-- Individual Scan Results -->
-            <!--            <div style="margin-top: 30px;">-->
-            <!--                <j:forEach var="res" items="${it.response.results}">-->
-            <!--                    <h2>${res.scanType} Scan Results</h2>-->
-            <!--                    <table class="pane bigtable" style="width: 100%;margin-bottom:20px; text-align:center;">-->
-            <!--                        <tr>-->
-            <!--                            <th class="pane-header">Project Name</th>-->
-            <!--                            <th class="pane-header">Repository Name</th>-->
-            <!--                            <th class="pane-header">Language</th>-->
-            <!--                            <th class="pane-header">Total Packages</th>-->
-            <!--                            <th class="pane-header">Vulnerabilities</th>-->
-            <!--                        </tr>-->
-            <!--                        <tr>-->
-            <!--                            <td class="pane" style="text-align: left;text-transform: uppercase;">-->
-            <!--                                <strong>${res.projectName}</strong>-->
-            <!--                            </td>-->
-            <!--                            <td class="pane" style="color:orange; font-weight:bold;text-align: left;">-->
-            <!--                                ${res.repositoryName}-->
-            <!--                            </td>-->
-            <!--                            <td class="pane" style="text-align: left;">${res.language}</td>-->
-            <!--                            <td class="pane" style="text-align: left;">${res.totalPackages}</td>-->
-            <!--                            <td class="pane" style="text-align: left;">${res.vulnerabilities}</td>-->
-            <!--                        </tr>-->
-            <!--                    </table>-->
-            <!--                </j:forEach>-->
-            <!--            </div>-->
+            <div style="margin-top:30px;">
+                <j:forEach var="res" items="${it.response.scanResults}">
+                    <div style="margin-bottom:30px; border:1px solid #ddd; border-radius:6px; padding:15px;">
+                        <h2 style="margin-top:0; text-transform:uppercase;">${res.scanType == 'CVE' ? 'SCA' : res.scanType} Scan Results</h2>
+                        <p><strong>Status: </strong> <span style="color:orange; font-weight:bold;text-align: left;">${res.status}</span></p>
+                        <p><strong>Branch: </strong> <span style="">${res.branchName}</span></p>
 
-            <div style="margin-top: 30px;">
-                <h2>Scan Results</h2>
-                <table class="jenkins-table sortable jenkins-table--medium" style="width: 100%; text-align:center;">
-                    <thead>
-                        <tr>
-                            <th class="pane-header">Scan Type</th>
-                            <th class="pane-header">Status</th>
-                            <th class="pane-header">Message</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <j:forEach var="res" items="${it.response.results}">
-                            <tr>
-                                <td class="pane" style="text-align: left;text-transform: uppercase;">
-                                    <strong>${res.scanType}</strong>
-                                </td>
-                                <td class="pane" style="color:orange; font-weight:bold;text-align: left;">
-                                    ${res.status}
-                                </td>
-                                <td class="pane" style="text-align: left;">${res.message}</td>
-                            </tr>
-                        </j:forEach>
-                    </tbody>
-                </table>
+                        <!-- SAST / SECRET / IAC findings -->
+                        <j:if test="${res.details.totalFindings != null}">
+                            <table class="jenkins-table jenkins-table--medium" style="width:100%; margin-top:10px;">
+                                <thead>
+                                    <tr>
+                                        <th>Total Findings</th>
+                                        <th>Critical</th>
+                                        <th>High</th>
+                                        <th>Medium</th>
+                                        <th>Low</th>
+                                        <th>Risk Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>${res.details.totalFindings}</td>
+                                        <td>${res.details.criticalFindings}</td>
+                                        <td>${res.details.highFindings}</td>
+                                        <td>${res.details.mediumFindings}</td>
+                                        <td>${res.details.lowFindings}</td>
+                                        <td>${res.details.riskScore}/100</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </j:if>
+
+                        <!-- SBOM details -->
+                        <j:if test="${res.scanType == 'SBOM'}">
+                            <table class="jenkins-table jenkins-table--medium" style="width:100%; margin-top:10px;">
+                                <thead>
+                                    <tr>
+                                        <th>Total Dependencies</th>
+                                        <th>Unique Packages</th>
+                                        <th>Direct</th>
+                                        <th>Transitive</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>${res.details.totalDependencies}</td>
+                                        <td>${res.details.uniquePackages}</td>
+                                        <td>${res.details.directDependencies}</td>
+                                        <td>${res.details.transitiveDependencies}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </j:if>
+
+<!--                        &lt;!&ndash; SECRET details &ndash;&gt;-->
+<!--                        <j:if test="${res.scanType == 'SECRET'}">-->
+<!--                            <p><strong>Files Affected:</strong> ${res.details.filesAffected}</p>-->
+<!--                            <p><strong>Highest Severity:</strong> ${res.details.highestSeverity}</p>-->
+<!--                            <p><strong>Risk Score:</strong> ${res.details.riskScore}/100</p>-->
+<!--                            <h3>Top Files</h3>-->
+<!--                            <ul>-->
+<!--                                <j:forEach var="file" items="${res.details.topFiles}">-->
+<!--                                    <li>${file.filePath} (${file.count})</li>-->
+<!--                                </j:forEach>-->
+<!--                            </ul>-->
+<!--                        </j:if>-->
+                    </div>
+                </j:forEach>
             </div>
         </l:main-panel>
     </l:layout>
