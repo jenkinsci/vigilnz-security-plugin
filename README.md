@@ -100,7 +100,8 @@ pipeline {
             steps {
                 vigilnzScan(
                     credentialsId: 'my-vigilnz-creds',
-                    scanTypes: 'sca,sast,sbom'
+                    scanTypes: 'sca,sast,sbom',
+                    projectName: 'Project_Name'
                 )
             }
         }
@@ -113,12 +114,11 @@ pipeline {
 
 ## Parameters Reference
 
-| Parameter     | Required | Description                           |
-|---------------|----------|---------------------------------------|
-| credentialsId | True     | ID of Vigilnz credential              |
-| scanTypes     | True     | Comma-separated list: `sca,sast,sbom` |
-
-[//]: # (| targetFile    | False    | File/path to scan &#40;optional&#41;          |)
+| Parameter     | Required | Description                                   |
+|---------------|----------|-----------------------------------------------|
+| credentialsId | True     | ID of Vigilnz credential                      |
+| scanTypes     | True     | Comma-separated list: `sca,sast,sbom`         |
+| projectName   | False    | Project Name for the scan (optional) |
 
 
 ## Configuration
@@ -148,7 +148,8 @@ pipeline {
 ```groovy
 vigilnzScan(
     credentialsId: 'my-vigilnz-token',
-    scanTypes: 'sca'
+    scanTypes: 'sca',
+    projectName: 'Project_Name'        
 )
 ```
 

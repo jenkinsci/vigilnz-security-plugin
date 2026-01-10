@@ -61,13 +61,6 @@ public class ScanResultAction implements RunAction2 {
 
     public boolean getIsScanCompleted() {
         try {
-            // Checking if the result is completed or not
-            boolean allCompleted = isAllCompleted();
-
-            //            if (allCompleted) {
-            //                return true;
-            //            }
-
             JSONObject payload = new JSONObject();
             payload.put("scanDetails", response.getScanInfo());
             payload.put("resultMethod", true);
@@ -86,7 +79,11 @@ public class ScanResultAction implements RunAction2 {
             ApiResponse apiResponse;
             apiResponse = mapper.readValue(apiResult, ApiResponse.class);
             apiResponse.setApiKey(response.getApiKey());
+            // Update response first
             setResponse(apiResponse);
+            // Checking if the result is completed or not
+            boolean allCompleted = isAllCompleted();
+            apiResponse.setAllScanCompleted(allCompleted);
 
             return allCompleted;
         } catch (Exception e) {
@@ -115,28 +112,6 @@ public class ScanResultAction implements RunAction2 {
         }
         return true; // only reached if all matched results were completed
     }
-
-    //
-    //    private boolean isAllCompleted() {
-    //        List<ApiResponse.ScanResults> scanResultsList = response.getScanResults();
-    //        List<ApiResponse.ScanInfo> scanInfoList = response.getScanInfo();
-    //
-    //        boolean allCompleted = false;
-    //
-    //        for (ApiResponse.ScanInfo scanInfo : scanInfoList) {
-    //            for (ApiResponse.ScanResults scanResults : scanResultsList) {
-    //                if (scanInfo.getScanTargetId() == scanResults.getScanTargetId()
-    //                        && scanInfo.getScanType().equalsIgnoreCase(scanResults.getScanType())) {
-    //
-    //                    if (!"COMPLETED".equalsIgnoreCase(scanResults.getStatus())) {
-    //                        allCompleted = false;
-    //                        break; // no need to continue if one is not completed
-    //                    }
-    //                }
-    //            }
-    //        }
-    //        return allCompleted;
-    //    }
 
     public String getTotalFindingsBySeverity(String severity) {
         if (response.getScanResults() == null) return "0";

@@ -119,7 +119,7 @@ public class ApiService {
                     response.append(line);
                 }
             }
-            listener.getLogger().println("API Succeed  " + response);
+            //            listener.getLogger().println("API Succeed  " + response);
             return response.toString();
 
         } catch (Exception e) {
@@ -129,7 +129,7 @@ public class ApiService {
     }
 
     public static String triggerScan(
-            String token, String targetFile, List<String> scanTypes, EnvVars env, TaskListener listener) {
+            String token, String projectName, List<String> scanTypes, EnvVars env, TaskListener listener) {
         try {
             // Step 1: Authenticate and get access token
             AuthResponse authResponse = authenticate(token, listener);
@@ -175,9 +175,8 @@ public class ApiService {
             json.put("branch", branch);
 
             // Optional fields
-            if (targetFile != null && !targetFile.trim().isEmpty()) {
-                json.put("project", targetFile);
-                json.put("targetFile", targetFile);
+            if (projectName != null && !projectName.trim().isEmpty()) {
+                json.put("projectName", projectName);
             }
 
             String body = json.toString();
@@ -195,7 +194,7 @@ public class ApiService {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     response.append(line);
-                    listener.getLogger().println("API Body: ===--- " + line);
+                    //                    listener.getLogger().println("API Body: ===--- " + line);
                 }
                 // listener.getLogger().println("API Response Body: " + response);
             }

@@ -11,6 +11,7 @@ public class ApiResponse {
     private String repoName;
     private String apiKey;
     private String message;
+    private boolean isAllScanCompleted;
     private List<ScanInfo> scanInfo;
     private List<ScanResults> scanResults;
     private List<String> scanTypes;
@@ -18,6 +19,14 @@ public class ApiResponse {
     public ApiResponse() {}
 
     // getters and setters
+    public boolean isAllScanCompleted() {
+        return isAllScanCompleted;
+    }
+
+    public void setAllScanCompleted(boolean allScanCompleted) {
+        isAllScanCompleted = allScanCompleted;
+    }
+
     public String getRepositoryId() {
         return repositoryId;
     }
@@ -124,6 +133,7 @@ public class ApiResponse {
         private String scanTargetId;
         private String scanType;
         private String status;
+        private int progress;
         private String branchName;
         private Details details;
         private String language;
@@ -178,6 +188,14 @@ public class ApiResponse {
             this.details = details;
         }
 
+        public int getProgress() {
+            return progress;
+        }
+
+        public void setProgress(int progress) {
+            this.progress = progress;
+        }
+
         // Nested classes
         @JsonIgnoreProperties(ignoreUnknown = true)
         public static class Details {
@@ -189,13 +207,51 @@ public class ApiResponse {
             private int lowFindings;
             private int riskScore;
 
+            // SBOM fields
+            private int totalDependencies;
+            private int directDependencies;
+            private int transitiveDependencies;
+            private int uniquePackages;
+
             public Details() {}
+
+            public int getTotalDependencies() {
+                return totalDependencies;
+            }
+
+            public void setTotalDependencies(int totalDependencies) {
+                this.totalDependencies = totalDependencies;
+            }
+
+            public int getDirectDependencies() {
+                return directDependencies;
+            }
+
+            public void setDirectDependencies(int directDependencies) {
+                this.directDependencies = directDependencies;
+            }
+
+            public int getTransitiveDependencies() {
+                return transitiveDependencies;
+            }
+
+            public void setTransitiveDependencies(int transitiveDependencies) {
+                this.transitiveDependencies = transitiveDependencies;
+            }
+
+            public int getUniquePackages() {
+                return uniquePackages;
+            }
+
+            public void setUniquePackages(int uniquePackages) {
+                this.uniquePackages = uniquePackages;
+            }
 
             public int getTotalFindings() {
                 return totalFindings;
             }
 
-            public void setTotalFindings(int scanType) {
+            public void setTotalFindings(int totalFindings) {
                 this.totalFindings = totalFindings;
             }
 

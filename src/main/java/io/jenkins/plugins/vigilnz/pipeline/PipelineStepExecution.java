@@ -127,7 +127,7 @@ public class PipelineStepExecution extends StepExecution {
 
             String result;
             try {
-                result = ApiService.triggerScan(token, step.getTargetFile(), scanTypes, env, listener);
+                result = ApiService.triggerScan(token, step.getProjectName(), scanTypes, env, listener);
                 if (result != null && !result.isEmpty()) {
                     run.addAction(new ScanResultAction(result, credentialsId));
                 } else {

@@ -34,12 +34,14 @@ import org.kohsuke.stapler.verb.POST;
 public class SecurityCheckBuilder extends Builder {
 
     private final String credentialsId;
-    private String targetFile; // Optional parameter
+    private String projectName; // Optional parameter
     private boolean cveScan;
     private boolean sastScan;
     private boolean sbomScan;
     private boolean iacScan;
     private boolean secretScan;
+    private boolean dastScan;
+    private boolean containerScan;
 
     @DataBoundConstructor
     public SecurityCheckBuilder(String credentialsId) {
@@ -50,13 +52,13 @@ public class SecurityCheckBuilder extends Builder {
         return credentialsId;
     }
 
-    public String getTargetFile() {
-        return targetFile;
+    public String getProjectName() {
+        return projectName;
     }
 
     @DataBoundSetter
-    public void setTargetFile(String targetFile) {
-        this.targetFile = targetFile;
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
     }
 
     public boolean isCveScan() {
@@ -95,6 +97,24 @@ public class SecurityCheckBuilder extends Builder {
         this.secretScan = secretScan;
     }
 
+    public boolean isDastScan() {
+        return dastScan;
+    }
+
+    @DataBoundSetter
+    public void setDastScan(boolean dastScan) {
+        this.dastScan = dastScan;
+    }
+
+    public boolean isContainerScan() {
+        return containerScan;
+    }
+
+    @DataBoundSetter
+    public void setContainerScan(boolean containerScan) {
+        this.containerScan = containerScan;
+    }
+
     public boolean isIacScan() {
         return iacScan;
     }
@@ -111,6 +131,8 @@ public class SecurityCheckBuilder extends Builder {
         if (sbomScan) types.add("sbom");
         if (iacScan) types.add("iac");
         if (secretScan) types.add("secret");
+        if (dastScan) types.add("dast");
+        if (containerScan) types.add("mscan");
         return types;
     }
 
@@ -156,8 +178,8 @@ public class SecurityCheckBuilder extends Builder {
 
         // listener.getLogger().println("Credential ID: " + credentialsId);
         // listener.getLogger().println("Your Token from Plugin: " + tokenText);
-        if (targetFile != null && !targetFile.trim().isEmpty()) {
-            listener.getLogger().println("Target File: " + targetFile);
+        if (projectName != null && !projectName.trim().isEmpty()) {
+            listener.getLogger().println("Project Name: " + projectName);
         } else {
             listener.getLogger().println("Target File: (not specified)");
         }
@@ -165,8 +187,7 @@ public class SecurityCheckBuilder extends Builder {
         String result = "";
 
         try {
-
-            result = ApiService.triggerScan(tokenText, targetFile, scanTypes, env, listener);
+            result = ApiService.triggerScan(tokenText, projectName, scanTypes, env, listener);
             // Attach results to build
             if (result != null && !result.isEmpty()) {
                 build.addAction(new ScanResultAction(result, credentialsId));
