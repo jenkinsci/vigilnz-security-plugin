@@ -2,7 +2,7 @@ package io.jenkins.plugins.vigilnz.utils;
 
 public class VigilnzConfig {
 
-//    private static String devBaseUrl = "http://localhost:1337";
+    //    private static String devBaseUrl = "http://localhost:1337";
     private static String devBaseUrl = "https://devapi.vigilnz.com";
     private static String prodBaseUrl = "https://api.vigilnz.com";
     private static String demoBaseUrl = "https://demoapi.vigilnz.com";
