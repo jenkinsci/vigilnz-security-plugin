@@ -9,6 +9,7 @@ import io.jenkins.plugins.vigilnz.api.ApiService;
 import io.jenkins.plugins.vigilnz.credentials.TokenCredentials;
 import io.jenkins.plugins.vigilnz.models.ApiResponse;
 import io.jenkins.plugins.vigilnz.utils.VigilnzConfig;
+import java.io.IOException;
 import java.util.List;
 import jenkins.model.RunAction2;
 import net.sf.json.JSONObject;
@@ -56,7 +57,7 @@ public class ScanResultAction implements RunAction2 {
             apiResponse.setAllScanCompleted(allCompleted);
 
             return allCompleted;
-        } catch (Exception e) {
+        } catch (IOException e) {
             return false;
         }
     }

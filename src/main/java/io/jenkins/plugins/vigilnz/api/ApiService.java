@@ -7,6 +7,7 @@ import io.jenkins.plugins.vigilnz.models.ApiResponse;
 import io.jenkins.plugins.vigilnz.models.AuthResponse;
 import io.jenkins.plugins.vigilnz.utils.VigilnzConfig;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -213,7 +214,7 @@ public class ApiService {
             // return response.toString();
             return fetchScanResults(accessTokenValue, scanInfo, listener, false);
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             listener.getLogger().println("API Error: " + e.getMessage());
             return null;
         }
