@@ -20,7 +20,7 @@ public class PipelineStep extends Step {
 
     private final String credentialsId;
     private final List<String> scanTypes;
-    private String targetFile; // Optional parameter
+    private String projectName; // Optional parameter
 
     @DataBoundConstructor
     public PipelineStep(String credentialsId, String scanTypes) {
@@ -41,13 +41,13 @@ public class PipelineStep extends Step {
         return credentialsId;
     }
 
-    public String getTargetFile() {
-        return targetFile;
+    public String getProjectName() {
+        return projectName;
     }
 
     @DataBoundSetter
-    public void setTargetFile(String targetFile) {
-        this.targetFile = targetFile;
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
     }
 
     public List<String> getScanTypes() {

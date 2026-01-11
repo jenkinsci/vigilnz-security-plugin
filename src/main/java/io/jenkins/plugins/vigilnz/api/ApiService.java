@@ -1,10 +1,13 @@
 package io.jenkins.plugins.vigilnz.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import hudson.EnvVars;
 import hudson.model.TaskListener;
+import io.jenkins.plugins.vigilnz.models.ApiResponse;
 import io.jenkins.plugins.vigilnz.models.AuthResponse;
 import io.jenkins.plugins.vigilnz.utils.VigilnzConfig;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -78,8 +81,56 @@ public class ApiService {
         }
     }
 
+    public static String fetchScanResults(String token, JSONObject scanInfo, TaskListener listener, boolean isApiKey) {
+        try {
+
+            if (isApiKey) {
+                try {
+                    // Step 1: Authenticate and get access token
+                    AuthResponse authResponse = authenticate(token, listener);
+                    if (authResponse == null || authResponse.getAccessToken() == null) {
+                        listener.error("Failed to authenticate. Cannot proceed with scan.");
+                        return null;
+                    }
+                    token = authResponse.getTokenType() + " " + authResponse.getAccessToken();
+                } catch (Exception e) {
+                    listener.getLogger().println("Credential Error:" + e);
+                }
+            }
+            // Step 1: Call multi-scan API with resultMethod:true
+            URL url = new URL(VigilnzConfig.getScanUrl());
+
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Authorization", token);
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setDoOutput(true);
+
+            String body = scanInfo.toString();
+            try (OutputStream os = conn.getOutputStream()) {
+                os.write(body.getBytes(StandardCharsets.UTF_8));
+            }
+
+            int responseCode = conn.getResponseCode();
+            StringBuilder response = new StringBuilder();
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+                    responseCode >= 400 ? conn.getErrorStream() : conn.getInputStream(), StandardCharsets.UTF_8))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                }
+            }
+            //            listener.getLogger().println("API Succeed  " + response);
+            return response.toString();
+
+        } catch (Exception e) {
+            listener.getLogger().println("API Error (fetch results): " + e.getMessage());
+            return null;
+        }
+    }
+
     public static String triggerScan(
-            String token, String targetFile, List<String> scanTypes, EnvVars env, TaskListener listener) {
+            String token, String projectName, List<String> scanTypes, EnvVars env, TaskListener listener) {
         try {
             // Step 1: Authenticate and get access token
             AuthResponse authResponse = authenticate(token, listener);
@@ -125,9 +176,8 @@ public class ApiService {
             json.put("branch", branch);
 
             // Optional fields
-            if (targetFile != null && !targetFile.trim().isEmpty()) {
-                json.put("project", targetFile);
-                json.put("targetFile", targetFile);
+            if (projectName != null && !projectName.trim().isEmpty()) {
+                json.put("projectName", projectName);
             }
 
             String body = json.toString();
@@ -145,13 +195,26 @@ public class ApiService {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     response.append(line);
+                    //                    listener.getLogger().println("API Body: ===--- " + line);
                 }
                 // listener.getLogger().println("API Response Body: " + response);
             }
+            String accessTokenValue = tokenType + " " + accessToken;
 
-            return response.toString();
+            // Convert JSON string to ApiResponse
+            ObjectMapper mapper = new ObjectMapper();
+            ApiResponse apiResponse;
+            apiResponse = mapper.readValue(response.toString(), ApiResponse.class);
+            ApiResponse scanResponse = apiResponse;
 
-        } catch (Exception e) {
+            JSONObject scanInfo = new JSONObject();
+            scanInfo.put("scanDetails", scanResponse.getScanInfo());
+            scanInfo.put("resultMethod", true);
+
+            // return response.toString();
+            return fetchScanResults(accessTokenValue, scanInfo, listener, false);
+
+        } catch (IOException e) {
             listener.getLogger().println("API Error: " + e.getMessage());
             return null;
         }

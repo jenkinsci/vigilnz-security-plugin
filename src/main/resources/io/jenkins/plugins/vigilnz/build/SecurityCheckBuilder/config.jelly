@@ -14,7 +14,7 @@
             <f:checkbox field="secret" title="Secret Scan"/>
         </div>
     </f:entry>
-    <f:entry title="Target File" field="targetFile">
+    <f:entry title="Project Name" field="projectName">
         <f:textbox/>
     </f:entry>
 </j:jelly>

@@ -4,7 +4,7 @@
 # configuration options inline this script below.
 #
 ---
-name: cd
+name: Deploy Jenkins
 on:
   workflow_dispatch:
     inputs:
@@ -22,8 +22,11 @@ on:
   # Note: Consider the use case #2 config for 'validate_only' below
   #       as an alternative option!
   check_run:
-    types:
-      - completed
+    types: [completed]
+
+  push:
+    tags:
+        - 'vigilnz-security-*'
 
 permissions:
   checks: read
@@ -31,6 +34,7 @@ permissions:
 
 jobs:
   maven-cd:
+    if: ${{ github.event.check_run.conclusion == 'success' }}
     uses: jenkins-infra/github-reusable-workflows/.github/workflows/maven-cd.yml@v1
     with:
       # Comment / uncomment the validate_only config appropriate to your preference:

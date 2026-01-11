@@ -127,9 +127,9 @@ public class PipelineStepExecution extends StepExecution {
 
             String result;
             try {
-                result = ApiService.triggerScan(token, step.getTargetFile(), scanTypes, env, listener);
+                result = ApiService.triggerScan(token, step.getProjectName(), scanTypes, env, listener);
                 if (result != null && !result.isEmpty()) {
-                    run.addAction(new ScanResultAction(result));
+                    run.addAction(new ScanResultAction(result, credentialsId));
                 } else {
                     listener.getLogger().println("API call failed, no action added.");
                     // return false;
@@ -154,7 +154,7 @@ public class PipelineStepExecution extends StepExecution {
 
     private void attachResult(Run<?, ?> run, String json) {
         try {
-            run.addAction(new ScanResultAction(json));
+            run.addAction(new ScanResultAction(json, ""));
         } catch (Exception ignored) {
             // Swallow to avoid masking original error
         }
