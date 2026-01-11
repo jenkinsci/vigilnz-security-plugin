@@ -2,18 +2,16 @@ package io.jenkins.plugins.vigilnz.utils;
 
 public class VigilnzConfig {
 
-    // Default URLs (for development)
-    // public static final String DEFAULT_BASE_URL = "https://api.vigilnz.com";
-    // public static final String DEFAULT_AUTH_URL = DEFAULT_BASE_URL +
-    // "/auth/api-key";
-    // public static final String DEFAULT_SCAN_URL = DEFAULT_BASE_URL +
-    // "/scan-targets/multi-scan";
-
-    private static String devBaseUrl = "http://localhost:1337";
-    // private static String devBaseUrl = "https://devapi.vigilnz.com";
+//    private static String devBaseUrl = "http://localhost:1337";
+    private static String devBaseUrl = "https://devapi.vigilnz.com";
     private static String prodBaseUrl = "https://api.vigilnz.com";
     private static String demoBaseUrl = "https://demoapi.vigilnz.com";
     private static String baseUrl = "https://api.vigilnz.com";
+
+    private static String DEV_VIGILNZ_URL = "https://devplatform.vigilnz.com";
+    private static String PROD_VIGILNZ_URL = "https://platform.vigilnz.com";
+    private static String DEMO_VIGILNZ_URL = "https://demoplatform.vigilnz.com";
+    private static String baseSiteUrl = DEV_VIGILNZ_URL;
 
     public static String getBaseUrl() {
         return baseUrl;
@@ -22,17 +20,22 @@ public class VigilnzConfig {
     public static void setBaseUrl(String newBaseUrl) {
         if (newBaseUrl.equalsIgnoreCase("dev")) {
             baseUrl = devBaseUrl;
-            return;
+            baseSiteUrl = DEV_VIGILNZ_URL;
         } else if (newBaseUrl.equalsIgnoreCase("demo")) {
             baseUrl = demoBaseUrl;
-            return;
+            baseSiteUrl = DEMO_VIGILNZ_URL;
         } else {
             baseUrl = prodBaseUrl;
+            baseSiteUrl = PROD_VIGILNZ_URL;
         }
     }
 
     public static String getAuthUrl() {
         return baseUrl + "/auth/api-key";
+    }
+
+    public static String getBaseSiteUrl() {
+        return baseSiteUrl;
     }
 
     public static String getScanUrl() {

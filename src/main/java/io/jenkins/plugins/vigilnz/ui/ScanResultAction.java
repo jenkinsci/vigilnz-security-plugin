@@ -29,36 +29,6 @@ public class ScanResultAction implements RunAction2 {
         this.response = apiResponse;
     }
 
-    //    public HttpResponse doGetScanResults() {
-    //        try {
-    //            JSONObject payload = new JSONObject();
-    //            payload.put("scanDetails", response.getScanInfo());
-    //            payload.put("resultMethod", true);
-    //
-    //            TokenCredentials creds =
-    //                    CredentialsProvider.findCredentialById(response.getApiKey(), TokenCredentials.class, run);
-    //
-    //            if (creds == null) {
-    //                return HttpResponses.error(500, "Credentials not found");
-    //            }
-    //
-    //            String apiResult =
-    //                    ApiService.fetchScanResults(creds.getToken().getPlainText(), payload, TaskListener.NULL,
-    // true);
-    //            payload.put("apiResult", JSONObject.fromObject(apiResult));
-    //
-    //            ObjectMapper mapper = new ObjectMapper();
-    //            ApiResponse apiResponse;
-    //            apiResponse = mapper.readValue(apiResult, ApiResponse.class);
-    //            apiResponse.setApiKey(response.getApiKey());
-    //            setResponse(apiResponse);
-    //
-    //            return HttpResponses.okJSON(JSONObject.fromObject(apiResult));
-    //        } catch (Exception e) {
-    //            return HttpResponses.error(500, "Error" + e);
-    //        }
-    //    }
-
     public boolean getIsScanCompleted() {
         try {
             JSONObject payload = new JSONObject();
@@ -132,6 +102,16 @@ public class ScanResultAction implements RunAction2 {
     public String getIconFileName() {
         //        return "clipboard.png"; // or a custom icon
         return "symbol-reader-outline plugin-ionicons-api"; // or a custom icon
+    }
+
+    public String getSiteUrl(String res) {
+        String siteUrl = VigilnzConfig.getBaseSiteUrl();
+        return switch (res.toLowerCase()) {
+            case "secret" -> siteUrl + "/secret-scan";
+            case "iac" -> siteUrl + "/iac-scan";
+            case "cve", "sca" -> siteUrl + "/sca";
+            default -> siteUrl + "/" + res.toLowerCase();
+        };
     }
 
     @Override

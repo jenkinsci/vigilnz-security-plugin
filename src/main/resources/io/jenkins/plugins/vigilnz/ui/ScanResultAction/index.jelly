@@ -95,26 +95,35 @@
             <div style="margin-top:30px;">
                 <j:forEach var="res" items="${it.response.scanResults}">
                     <div style="margin-bottom:30px; border:1px solid #ddd; border-radius:6px; padding:15px;">
-                        <h2 style="margin: 0;margin-bottom:15px;display: flex;gap: 10px;align-items: center;">
-                            <j:choose>
-                                <j:when test="${res.scanType == 'CVE'}">
-                                    <l:icon src="symbol-sca plugin-vigilnz-security" style="width:25px;height:25px;" class="icon-lg"/>
-                                </j:when>
-                                <j:when test="${res.scanType == 'SBOM'}">
-                                    <l:icon src="symbol-sbom plugin-vigilnz-security" style="width:25px;height:25px;" class="icon-lg"/>
-                                </j:when>
-                                <j:when test="${res.scanType == 'SAST'}">
-                                    <l:icon src="symbol-sast plugin-vigilnz-security" style="width:25px;height:25px;" class="icon-lg"/>
-                                </j:when>
-                                <j:when test="${res.scanType == 'SECRET'}">
-                                    <l:icon src="symbol-secret plugin-vigilnz-security" style="width:25px;height:25px;" class="icon-lg"/>
-                                </j:when>
-                                <j:when test="${res.scanType == 'IAC'}">
-                                    <l:icon src="symbol-iac plugin-vigilnz-security" style="width:25px;height:25px;" class="icon-lg"/>
-                                </j:when>
-                            </j:choose>
-                            ${res.scanType == 'CVE' ? 'SCA' : res.scanType} Scan Results
-                        </h2>
+                        <div style="margin: 0;display: flex; align-items: center;justify-content:space-between">
+                            <h2 style="margin: 0;margin-bottom:15px;display: flex;gap: 10px;align-items: center;">
+                                <j:choose>
+                                    <j:when test="${res.scanType == 'CVE'}">
+                                        <l:icon src="symbol-sca plugin-vigilnz-security" style="width:25px;height:25px;" class="icon-lg"/>
+                                    </j:when>
+                                    <j:when test="${res.scanType == 'SBOM'}">
+                                        <l:icon src="symbol-sbom plugin-vigilnz-security" style="width:25px;height:25px;" class="icon-lg"/>
+                                    </j:when>
+                                    <j:when test="${res.scanType == 'SAST'}">
+                                        <l:icon src="symbol-sast plugin-vigilnz-security" style="width:25px;height:25px;" class="icon-lg"/>
+                                    </j:when>
+                                    <j:when test="${res.scanType == 'SECRET'}">
+                                        <l:icon src="symbol-secret plugin-vigilnz-security" style="width:25px;height:25px;" class="icon-lg"/>
+                                    </j:when>
+                                    <j:when test="${res.scanType == 'IAC'}">
+                                        <l:icon src="symbol-iac plugin-vigilnz-security" style="width:25px;height:25px;" class="icon-lg"/>
+                                    </j:when>
+                                </j:choose>
+                                ${res.scanType == 'CVE' ? 'SCA' : res.scanType} Scan Results
+                            </h2>
+                            <div style="margin-right:10px;display:flex;gap:5px;align-items:center;">
+                                <a href="${it.getSiteUrl(res.scanType)}"
+                                   target="_blank"
+                                   style="color:#3b82f6; font-weight:600; text-decoration:none;">
+                                    View Details <l:icon class="icon-sm" src="symbol-arrow-right" />
+                                </a>
+                            </div>
+                        </div>
                         <p>
                             <span style="font-weight:600;color:#5c5c5c">Status: </span>
                             <j:choose>
