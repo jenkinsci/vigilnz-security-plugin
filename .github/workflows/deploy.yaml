@@ -34,7 +34,6 @@ permissions:
 
 jobs:
   maven-cd:
-    if: ${{ github.event.check_run.conclusion == 'success' }}
     uses: jenkins-infra/github-reusable-workflows/.github/workflows/maven-cd.yml@v1
     with:
       # Comment / uncomment the validate_only config appropriate to your preference:
