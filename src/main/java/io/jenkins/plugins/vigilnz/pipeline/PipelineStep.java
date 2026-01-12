@@ -30,7 +30,17 @@ public class PipelineStep extends Step {
         if (scanTypes != null && !scanTypes.trim().isEmpty()) {
             List<String> scanTypeList = Arrays.asList(scanTypes.split("\\s*,\\s*"));
             this.scanTypes = scanTypeList.stream()
-                    .map(s -> s.equalsIgnoreCase("sca") ? "cve" : s)
+                    .map(s -> {
+                        if (s.equalsIgnoreCase("sca")) {
+                            return "cve";
+                        } else if (s.equalsIgnoreCase("secret scan")) {
+                            return "secret";
+                        } else if (s.equalsIgnoreCase("iac scan")) {
+                            return "iac";
+                        } else {
+                            return s.toLowerCase();
+                        }
+                    })
                     .collect(Collectors.toList());
         } else {
             this.scanTypes = List.of();

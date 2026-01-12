@@ -7,11 +7,11 @@
 
     <f:entry field="scanTypes" title="Scan Types" description="Select at least one scan type (required)">
         <div style="display:flex;gap:20px;">
-            <f:checkbox field="cveScan" title="SCA Scan"/>
-            <f:checkbox field="sbomScan" title="SBOM Scan"/>
-            <f:checkbox field="sastScan" title="SAST Scan"/>
-            <f:checkbox field="iac" title="IAC Scan"/>
-            <f:checkbox field="secret" title="Secret Scan"/>
+            <f:checkbox field="cveScan" title="SCA"/>
+            <f:checkbox field="sbomScan" title="SBOM"/>
+            <f:checkbox field="sastScan" title="SAST"/>
+            <f:checkbox field="secretScan" title="SECRET SCAN"/>
+            <f:checkbox field="iacScan" title="IAC SCAN"/>
         </div>
     </f:entry>
     <f:entry title="Project Name" field="projectName">
