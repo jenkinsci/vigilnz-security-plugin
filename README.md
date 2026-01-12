@@ -148,7 +148,7 @@ pipeline {
 ```groovy
 vigilnzScan(
     credentialsId: 'my-vigilnz-token',
-    scanTypes: 'sca',
+    scanTypes: 'SCA',
     projectName: 'Project_Name'        
 )
 ```
@@ -158,7 +158,7 @@ vigilnzScan(
 ```groovy
 vigilnzScan(
     credentialsId: 'my-vigilnz-token',
-    scanTypes: 'sca,sast,sbom,iac,secret'
+    scanTypes: 'SCA,SAST,SBOM,IAC SCAN,SECRET SCAN'
 )
 ```
 
@@ -174,7 +174,7 @@ pipeline {
                 withCredentials([string(credentialsId: 'vigilnz-token', variable: 'VIGILNZ_TOKEN')]) {
                     vigilnzScan(
                         credentialsId: 'vigilnz-token',
-                        scanTypes: 'sca,sast'
+                        scanTypes: 'SCA,SBOM'
                     )
                 }
             }
@@ -207,7 +207,7 @@ pipeline {
 - **Issues**: Report issues on [GitHub Issues](https://github.com/jenkinsci/vigilnz-security-plugin/issues)
 - **Documentation**: [Plugin](https://github.com/jenkinsci/vigilnz-security-plugin)
 
-[//]: # (- **Email**: support@vigilnz.com)
+- **Email**: admin@vigilnz.com
 
 [//]: # (## Contributing)
 
@@ -215,13 +215,12 @@ pipeline {
 
 ## Changelog
 
-### Version 1.0
+### Version 1.60
 
-- Initial release
-- Support for SCA, SAST, SBOM, IAC, Secret scan types
-- Freestyle and Pipeline job support
-- Secure credential management
-- Build sidebar results display
+- Enhanced support for SCA, SAST, SBOM, IaC Scan, and Secret Scan types
+- Improved Freestyle and Pipeline job integration
+- Strengthened secure credential management
+- Refined build sidebar results display with detailed vulnerability insights
 
 ## License
 
