@@ -31,6 +31,11 @@ public class ScanResultAction implements RunAction2 {
     }
 
     public boolean getIsScanCompleted() {
+
+        if (response.isAllScanCompleted()) {
+            return true;
+        }
+
         try {
             JSONObject payload = new JSONObject();
             payload.put("scanDetails", response.getScanInfo());

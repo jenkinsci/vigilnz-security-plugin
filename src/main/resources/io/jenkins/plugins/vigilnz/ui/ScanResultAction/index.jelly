@@ -150,7 +150,16 @@
                             <table class="jenkins-table jenkins-table--medium" style="width:100%; margin-top:10px;">
                                 <thead>
                                     <tr>
-                                        <th>Total Findings</th>
+                                        <th>
+                                            <j:choose>
+                                                <j:when test="${res.scanType == 'CVE' or res.scanType == 'SCA'}">
+                                                    Total Packages
+                                                </j:when>
+                                                <j:otherwise>
+                                                    Total Findings
+                                                </j:otherwise>
+                                            </j:choose>
+                                        </th>
                                         <th>Critical</th>
                                         <th>High</th>
                                         <th>Medium</th>
