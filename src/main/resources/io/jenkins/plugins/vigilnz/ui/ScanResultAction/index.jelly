@@ -135,73 +135,116 @@
                                 </j:otherwise>
                             </j:choose>
                           </p>
-                        <p style="margin-bottom:5px;">
-                            <span style="font-weight:600;color:#5c5c5c">Branch: </span>
-                            <span style="font-weight:bold;">${res.branchName}</span>
-                        </p>
-                        <j:if test="${res.progress != 100}">
-                            <div style="display:flex;gap:5px;align-items:center;font-weight:500;">
-                                <t:progressBar pos="${res.progress}" animate="true" /> ${res.progress}%
-                            </div>
-                        </j:if>
 
-                        <!-- SAST / SECRET / IAC findings -->
-                        <j:if test="${res.details.totalFindings != null and !res.scanType.equalsIgnoreCase('SBOM')}">
-                            <table class="jenkins-table jenkins-table--medium" style="width:100%; margin-top:10px;">
-                                <thead>
-                                    <tr>
-                                        <th>
-                                            <j:choose>
-                                                <j:when test="${res.scanType == 'CVE' or res.scanType == 'SCA'}">
-                                                    Total Packages
-                                                </j:when>
-                                                <j:otherwise>
-                                                    Total Findings
-                                                </j:otherwise>
-                                            </j:choose>
-                                        </th>
-                                        <th>Critical</th>
-                                        <th>High</th>
-                                        <th>Medium</th>
-                                        <th>Low</th>
-                                        <th>Risk Score</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>${res.details.totalFindings}</td>
-                                        <td>${res.details.criticalFindings}</td>
-                                        <td>${res.details.highFindings}</td>
-                                        <td>${res.details.mediumFindings}</td>
-                                        <td>${res.details.lowFindings}</td>
-                                        <td>${res.details.riskScore}/100</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </j:if>
+                        <j:choose>
+                            <j:when test="${res.scanType == 'DAST'}">
+                                <p style="margin-bottom:5px;">
+                                    <span style="font-weight:600;color:#5c5c5c">Target Url: </span>
+                                    <a style="font-weight:bold;" href="${res.details.targetUrl}" target="_blank">${res.details.targetUrl}</a>
+                                </p>
+                                <p style="margin-bottom:5px;">
+                                    <span style="font-weight:600;color:#5c5c5c">Scan Type: </span>
+                                    <span style="font-weight:bold;">${res.details.dastScanType}</span>
+                                </p>
+                                <j:if test="${res.progress != 100 or !res.status.equalsIgnoreCase('completed')}">
+                                    <div style="display:flex;gap:5px;align-items:center;font-weight:500;">
+                                        <t:progressBar pos="${res.progress}" animate="true" /> ${res.progress}%
+                                    </div>
+                                </j:if>
+                            </j:when>
+                            <j:otherwise>
+                                <p style="margin-bottom:5px;">
+                                    <span style="font-weight:600;color:#5c5c5c">Branch: </span>
+                                    <span style="font-weight:bold;">${res.branchName}</span>
+                                </p>
+                                <j:if test="${res.progress != 100 or !res.status.equalsIgnoreCase('completed')}">
+                                    <div style="display:flex;gap:5px;align-items:center;font-weight:500;">
+                                        <t:progressBar pos="${res.progress}" animate="true" /> ${res.progress}%
+                                    </div>
+                                </j:if>
+                            </j:otherwise>
+                        </j:choose>
 
-                        <!-- SBOM details -->
-                        <j:if test="${res.scanType == 'SBOM'}">
-                            <table class="jenkins-table jenkins-table--medium" style="width:100%; margin-top:10px;">
-                                <thead>
-                                    <tr>
-                                        <th>Total Dependencies</th>
-                                        <th>Unique Packages</th>
-                                        <th>Direct</th>
-                                        <th>Transitive</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>${res.details.totalDependencies}</td>
-                                        <td>${res.details.uniquePackages}</td>
-                                        <td>${res.details.directDependencies}</td>
-                                        <td>${res.details.transitiveDependencies}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </j:if>
-
+                        <j:choose>
+                            <j:when test="${res.scanType == 'DAST'}">
+                                <!-- DAST details -->
+                                <table class="jenkins-table jenkins-table--medium" style="width:100%; margin-top:10px;">
+                                    <thead>
+                                        <tr>
+                                            <th>Total Findings</th>
+                                            <th>Critical</th>
+                                            <th>High</th>
+                                            <th>Medium</th>
+                                            <th>Low</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>${res.details.totalFindings}</td>
+                                            <td>${res.details.criticalFindings}</td>
+                                            <td>${res.details.highFindings}</td>
+                                            <td>${res.details.mediumFindings}</td>
+                                            <td>${res.details.lowFindings}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </j:when>
+                            <j:when test="${res.scanType == 'SBOM'}">
+                                <!-- SBOM details -->
+                                <table class="jenkins-table jenkins-table--medium" style="width:100%; margin-top:10px;">
+                                    <thead>
+                                        <tr>
+                                            <th>Total Dependencies</th>
+                                            <th>Unique Packages</th>
+                                            <th>Direct</th>
+                                            <th>Transitive</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>${res.details.totalDependencies}</td>
+                                            <td>${res.details.uniquePackages}</td>
+                                            <td>${res.details.directDependencies}</td>
+                                            <td>${res.details.transitiveDependencies}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </j:when>
+                            <j:otherwise>
+                                <!-- SAST / SECRET / IAC findings -->
+                                <table class="jenkins-table jenkins-table--medium" style="width:100%; margin-top:10px;">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                <j:choose>
+                                                    <j:when test="${res.scanType == 'CVE' or res.scanType == 'SCA'}">
+                                                        Total Packages
+                                                    </j:when>
+                                                    <j:otherwise>
+                                                        Total Findings
+                                                    </j:otherwise>
+                                                </j:choose>
+                                            </th>
+                                            <th>Critical</th>
+                                            <th>High</th>
+                                            <th>Medium</th>
+                                            <th>Low</th>
+                                            <th>Risk Score</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>${res.details.totalFindings}</td>
+                                            <td>${res.details.criticalFindings}</td>
+                                            <td>${res.details.highFindings}</td>
+                                            <td>${res.details.mediumFindings}</td>
+                                            <td>${res.details.lowFindings}</td>
+                                            <td>${res.details.riskScore}/100</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </j:otherwise>
+                        </j:choose>
                     </div>
                 </j:forEach>
             </div>

@@ -17,10 +17,12 @@ import hudson.util.ListBoxModel;
 import io.jenkins.cli.shaded.org.apache.commons.lang.StringUtils;
 import io.jenkins.plugins.vigilnz.api.ApiService;
 import io.jenkins.plugins.vigilnz.credentials.TokenCredentials;
+import io.jenkins.plugins.vigilnz.models.ApiRequest;
 import io.jenkins.plugins.vigilnz.models.ApiResponse;
 import io.jenkins.plugins.vigilnz.ui.ScanResultAction;
 import io.jenkins.plugins.vigilnz.utils.VigilnzConfig;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import jenkins.model.Jenkins;
@@ -42,6 +44,8 @@ public class SecurityCheckBuilder extends Builder {
     private boolean secretScan;
     private boolean dastScan;
     private boolean containerScan;
+    private String targetSiteUrl;
+    private String dastScanType;
 
     @DataBoundConstructor
     public SecurityCheckBuilder(String credentialsId) {
@@ -125,15 +129,33 @@ public class SecurityCheckBuilder extends Builder {
     }
 
     public List<String> getScanTypes() {
-        List<String> types = new java.util.ArrayList<>();
+        List<String> types = new ArrayList<>();
         if (cveScan) types.add("cve");
         if (sastScan) types.add("sast");
         if (sbomScan) types.add("sbom");
         if (iacScan) types.add("iac");
         if (secretScan) types.add("secret");
         if (dastScan) types.add("dast");
-        if (containerScan) types.add("mscan");
+        if (containerScan) types.add("container");
         return types;
+    }
+
+    public String displayScan(List<String> scansList) {
+        List<String> updatedList = scansList.stream()
+                .map(s -> {
+                    if (s.equalsIgnoreCase("cve")) {
+                        s = "sca";
+                    } else if (s.equalsIgnoreCase("secret")) {
+                        s = "secret scan";
+                    } else if (s.equalsIgnoreCase("iac")) {
+                        s = "iac scan";
+                    } else if (s.equalsIgnoreCase("container")) {
+                        s = "container scan";
+                    }
+                    return s.toUpperCase();
+                })
+                .toList();
+        return String.join(", ", updatedList);
     }
 
     // this function trigger when user click the build button
@@ -183,11 +205,21 @@ public class SecurityCheckBuilder extends Builder {
         } else {
             listener.getLogger().println("Target File: (not specified)");
         }
-        listener.getLogger().println("Selected Scan Types: " + String.join(", ", scanTypes));
+        listener.getLogger().println("Selected Scan Types: " + displayScan(scanTypes));
+        listener.getLogger().println("Selected Scan Types:1 " + targetSiteUrl);
         String result = "";
 
+        ApiRequest.ScanContext dastScanContext = new ApiRequest.ScanContext("", "");
+        dastScanContext.setTargetUrl(targetSiteUrl);
+        dastScanContext.setDastScanType(dastScanType);
+
+        ApiRequest apiRequest = new ApiRequest();
+        apiRequest.setProjectName(projectName);
+        apiRequest.setScanTypes(scanTypes);
+        apiRequest.setScanContext(dastScanContext);
+
         try {
-            result = ApiService.triggerScan(tokenText, projectName, scanTypes, env, listener);
+            result = ApiService.triggerScan(tokenText, apiRequest, env, listener);
             // Attach results to build
             if (result != null && !result.isEmpty()) {
                 build.addAction(new ScanResultAction(result, credentialsId));
@@ -223,6 +255,24 @@ public class SecurityCheckBuilder extends Builder {
         }
     }
 
+    public String getTargetSiteUrl() {
+        return targetSiteUrl;
+    }
+
+    @DataBoundSetter
+    public void setTargetSiteUrl(String targetSiteUrl) {
+        this.targetSiteUrl = targetSiteUrl;
+    }
+
+    public String getDastScanType() {
+        return dastScanType;
+    }
+
+    @DataBoundSetter
+    public void setDastScanType(String dastScanType) {
+        this.dastScanType = dastScanType;
+    }
+
     @Extension
     public static class DescriptorImpl extends BuildStepDescriptor<Builder> {
 
@@ -253,6 +303,15 @@ public class SecurityCheckBuilder extends Builder {
                 items.add(label, c.getId());
             }
             items.add("None", "");
+            return items;
+        }
+
+        @POST
+        public ListBoxModel doFillDastScanTypeItems() {
+            ListBoxModel items = new ListBoxModel();
+            items.add("Spider Only", "spider");
+            items.add("Active Scan Only", "active");
+            items.add("Full Scan", "full");
             return items;
         }
 

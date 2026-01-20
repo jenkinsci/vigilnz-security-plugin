@@ -1,8 +1,10 @@
 package io.jenkins.plugins.vigilnz.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.model.TaskListener;
+import io.jenkins.plugins.vigilnz.models.ApiRequest;
 import io.jenkins.plugins.vigilnz.models.ApiResponse;
 import io.jenkins.plugins.vigilnz.models.AuthResponse;
 import io.jenkins.plugins.vigilnz.utils.VigilnzConfig;
@@ -129,8 +131,7 @@ public class ApiService {
         }
     }
 
-    public static String triggerScan(
-            String token, String projectName, List<String> scanTypes, EnvVars env, TaskListener listener) {
+    public static String triggerScan(String token, ApiRequest requestData, EnvVars env, TaskListener listener) {
         try {
             // Step 1: Authenticate and get access token
             AuthResponse authResponse = authenticate(token, listener);
@@ -141,6 +142,9 @@ public class ApiService {
 
             String accessToken = authResponse.getAccessToken();
             String tokenType = authResponse.getTokenType();
+
+            String projectName = requestData.getProjectName();
+            List<String> scanTypes = requestData.getScanTypes();
 
             listener.getLogger().println("Using access token for multi-scan API call...");
 
@@ -163,6 +167,7 @@ public class ApiService {
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setDoOutput(true);
 
+            listener.getLogger().println("scanTypes -- : " + scanTypes);
             // Validate scan types
             if (scanTypes == null || scanTypes.isEmpty()) {
                 listener.error("No scan types selected. At least one scan type is required.");
@@ -175,12 +180,20 @@ public class ApiService {
             json.put("gitRepoUrl", repoUrl);
             json.put("branch", branch);
 
+            listener.getLogger().println("scanTypes12 -- : " + scanTypes + "---" + requestData);
+            if (scanTypes.contains("dast")) {
+                json.put("scanContext", requestData.getScanContext());
+            }
+
+            listener.getLogger().println("scanTypes12 --12-- : " + projectName);
             // Optional fields
             if (projectName != null && !projectName.trim().isEmpty()) {
                 json.put("projectName", projectName);
             }
 
             String body = json.toString();
+
+            listener.getLogger().println("Payload: " + body);
 
             try (OutputStream os = conn.getOutputStream()) {
                 os.write(body.getBytes(StandardCharsets.UTF_8));
@@ -199,6 +212,12 @@ public class ApiService {
                 }
                 // listener.getLogger().println("API Response Body: " + response);
             }
+
+            if (responseCode >= 400) {
+                listener.error("API call failed with HTTP " + responseCode);
+                throw new AbortException("Scan API failed: " + response);
+            }
+
             String accessTokenValue = tokenType + " " + accessToken;
 
             // Convert JSON string to ApiResponse

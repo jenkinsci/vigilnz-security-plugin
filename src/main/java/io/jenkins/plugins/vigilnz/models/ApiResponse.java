@@ -207,6 +207,9 @@ public class ApiResponse {
             private int lowFindings;
             private int riskScore;
 
+            private String dastScanType;
+            private String targetUrl;
+
             // SBOM fields
             private int totalDependencies;
             private int directDependencies;
@@ -293,6 +296,22 @@ public class ApiResponse {
 
             public void setRiskScore(int riskScore) {
                 this.riskScore = riskScore;
+            }
+
+            public String getDastScanType() {
+                return dastScanType;
+            }
+
+            public void setDastScanType(String dastScanType) {
+                this.dastScanType = dastScanType;
+            }
+
+            public String getTargetUrl() {
+                return targetUrl;
+            }
+
+            public void setTargetUrl(String targetUrl) {
+                this.targetUrl = targetUrl;
             }
         }
     }
