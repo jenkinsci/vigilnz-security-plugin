@@ -11,8 +11,8 @@
                 <f:checkbox name="SCA" title="SCA" value="SCA" onclick="updateScanTypes()"/>
                 <f:checkbox name="SBOM" title="SBOM" value="SBOM" onclick="updateScanTypes()"/>
                 <f:checkbox name="SAST" title="SAST" value="SAST" onclick="updateScanTypes()"/>
-                <f:checkbox name="SECRET SCAN" title="SECRET" value="SECRET" onclick="updateScanTypes()"/>
-                <f:checkbox name="IAC SCAN" title="IAC" value="IAC" onclick="updateScanTypes()"/>
+                <f:checkbox name="SECRET SCAN" title="SECRET SCAN" value="SECRET" onclick="updateScanTypes()"/>
+                <f:checkbox name="IAC SCAN" title="IAC SCAN" value="IAC" onclick="updateScanTypes()"/>
             </div>
             <input type="hidden" name="scanTypes" id="scanTypesField" value=""/>
         </f:entry>

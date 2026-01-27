@@ -1,11 +1,8 @@
 package io.jenkins.plugins.vigilnz.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import hudson.Extension;
-import hudson.model.Describable;
-import hudson.model.Descriptor;
-import jakarta.annotation.Nonnull;
 import java.util.List;
+import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
@@ -15,7 +12,7 @@ public class ApiRequest {
     private String repoUrl;
     private String projectName;
     private ScanContext scanContext;
-
+    private ContainerScanContext containerScanContext;
     private List<String> scanTypes;
 
     public ApiRequest() {}
@@ -54,9 +51,18 @@ public class ApiRequest {
         this.scanContext = scanContext;
     }
 
+    public ContainerScanContext getContainerScanContext() {
+        return containerScanContext;
+    }
+
+    @DataBoundSetter
+    public void setContainerScanContext(ContainerScanContext containerScanContext) {
+        this.containerScanContext = containerScanContext;
+    }
+
     // Nested classes
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class ScanContext implements Describable<ScanContext> {
+    public static class ScanContext {
         private String targetUrl;
         private String dastScanType;
 
@@ -83,14 +89,75 @@ public class ApiRequest {
         public void setDastScanType(String dastScanType) {
             this.dastScanType = dastScanType;
         }
+    }
 
-        @Extension
-        public static class DescriptorImpl extends Descriptor<ScanContext> {
-            @Nonnull
-            @Override
-            public String getDisplayName() {
-                return "DAST Scan Context";
-            }
+    // Nested classes
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class ContainerScanContext {
+        private String imageName;
+        private String registryProvider;
+        private String registrySubType;
+        private String customRegistryUrl;
+        private String authMethod;
+        private JSONObject credentials;
+
+        @DataBoundConstructor
+        public ContainerScanContext(String imageName) {
+            this.imageName = imageName;
+        }
+
+        public String getImageName() {
+            return imageName;
+        }
+
+        @DataBoundSetter
+        public void setImageName(String imageName) {
+            this.imageName = imageName;
+        }
+
+        public String getRegistryProvider() {
+            return registryProvider;
+        }
+
+        @DataBoundSetter
+        public void setRegistryProvider(String registryProvider) {
+            this.registryProvider = registryProvider;
+        }
+
+        public String getRegistrySubType() {
+            return registrySubType;
+        }
+
+        @DataBoundSetter
+        public void setRegistrySubType(String registrySubType) {
+            this.registrySubType = registrySubType;
+        }
+
+        public String getAuthMethod() {
+            return authMethod;
+        }
+
+        @DataBoundSetter
+        public void setAuthMethod(String authMethod) {
+            this.authMethod = authMethod;
+        }
+
+        public String getCustomRegistryUrl() {
+            return customRegistryUrl;
+        }
+
+        @DataBoundSetter
+        public void setCustomRegistryUrl(String customRegistryUrl) {
+            this.customRegistryUrl = customRegistryUrl;
+        }
+
+        public JSONObject getCredentials() {
+            return credentials;
+        }
+
+        @DataBoundSetter
+        public void setCredentials(JSONObject credentials) {
+            this.credentials = credentials;
         }
     }
 }

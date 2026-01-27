@@ -115,6 +115,7 @@ public class ScanResultAction implements RunAction2 {
         return switch (res.toLowerCase()) {
             case "secret" -> siteUrl + "/secret-scan";
             case "iac" -> siteUrl + "/iac-scan";
+            case "container" -> siteUrl + "/container-scan";
             case "cve", "sca" -> siteUrl + "/sca";
             default -> siteUrl + "/" + res.toLowerCase();
         };

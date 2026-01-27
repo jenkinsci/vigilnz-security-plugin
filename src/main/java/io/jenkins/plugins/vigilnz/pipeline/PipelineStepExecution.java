@@ -12,6 +12,7 @@ import io.jenkins.plugins.vigilnz.api.ApiService;
 import io.jenkins.plugins.vigilnz.credentials.TokenCredentials;
 import io.jenkins.plugins.vigilnz.models.ApiRequest;
 import io.jenkins.plugins.vigilnz.models.ApiResponse;
+import io.jenkins.plugins.vigilnz.models.ContainerScanContext;
 import io.jenkins.plugins.vigilnz.ui.ScanResultAction;
 import io.jenkins.plugins.vigilnz.utils.VigilnzConfig;
 import java.io.File;
@@ -22,6 +23,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import net.sf.json.JSONObject;
 import org.jenkinsci.plugins.workflow.steps.StepContext;
 import org.jenkinsci.plugins.workflow.steps.StepExecution;
 
@@ -172,7 +174,38 @@ public class PipelineStepExecution extends StepExecution {
             apiRequest.setProjectName(step.getProjectName());
             apiRequest.setScanTypes(scanTypes);
             apiRequest.setScanContext(step.getDastScanContext());
-            listener.getLogger().println("ERRRORORRO=====" + step.getDastScanContext());
+
+            ApiRequest.ContainerScanContext containerScanContext = new ApiRequest.ContainerScanContext("");
+
+            ContainerScanContext pipeLineContainerScanInfo = step.getContainerScanContext();
+
+            containerScanContext.setImageName(pipeLineContainerScanInfo.getImage());
+            containerScanContext.setRegistryProvider(pipeLineContainerScanInfo.getProvider());
+
+            JSONObject json = new JSONObject();
+            if (pipeLineContainerScanInfo.getAuth() != null) {
+                containerScanContext.setAuthMethod(
+                        pipeLineContainerScanInfo.getAuth().getType());
+
+                // Send scan types as array
+                if (pipeLineContainerScanInfo.getAuth().getType().equalsIgnoreCase("token")) {
+                    json.put("token", pipeLineContainerScanInfo.getAuth().getToken());
+                } else if (pipeLineContainerScanInfo.getAuth().getType().equalsIgnoreCase("username-password")) {
+                    json.put("username", pipeLineContainerScanInfo.getAuth().getUsername());
+                    json.put("password", pipeLineContainerScanInfo.getAuth().getPassword());
+                }
+                containerScanContext.setCredentials(json);
+            }
+
+            if (pipeLineContainerScanInfo.getRegistry() != null) {
+                containerScanContext.setCustomRegistryUrl(
+                        pipeLineContainerScanInfo.getRegistry().getUrl());
+                containerScanContext.setRegistrySubType(
+                        pipeLineContainerScanInfo.getRegistry().getType());
+            }
+
+            apiRequest.setContainerScanContext(containerScanContext);
+
             String result;
             try {
                 result = ApiService.triggerScan(token, apiRequest, env, listener);

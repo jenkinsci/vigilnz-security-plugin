@@ -180,12 +180,23 @@ public class ApiService {
             json.put("gitRepoUrl", repoUrl);
             json.put("branch", branch);
 
-            listener.getLogger().println("scanTypes12 -- : " + scanTypes + "---" + requestData);
-            if (scanTypes.contains("dast")) {
-                json.put("scanContext", requestData.getScanContext());
+            if (scanTypes.stream().anyMatch(s -> s.equalsIgnoreCase("dast"))) {
+                if (requestData.getScanContext() != null) {
+                    json.put("scanContext", requestData.getScanContext());
+                } else {
+                    listener.getLogger().println("No DAST context set, skipping...");
+                }
             }
 
-            listener.getLogger().println("scanTypes12 --12-- : " + projectName);
+            if (scanTypes.stream().anyMatch(s -> s.equalsIgnoreCase("container"))) {
+                if (requestData.getContainerScanContext() != null) {
+                    json.put("containerScanContext", requestData.getContainerScanContext());
+                } else {
+                    listener.getLogger().println("No CONTAINER SCAN context set, skipping...");
+                }
+            }
+
+            listener.getLogger().println("No ++" + requestData.getContainerScanContext());
             // Optional fields
             if (projectName != null && !projectName.trim().isEmpty()) {
                 json.put("projectName", projectName);
@@ -210,7 +221,7 @@ public class ApiService {
                     response.append(line);
                     //                    listener.getLogger().println("API Body: ===--- " + line);
                 }
-                // listener.getLogger().println("API Response Body: " + response);
+                listener.getLogger().println("API Response Body: " + response);
             }
 
             if (responseCode >= 400) {
@@ -235,6 +246,7 @@ public class ApiService {
 
         } catch (IOException e) {
             listener.getLogger().println("API Error: " + e.getMessage());
+            e.printStackTrace(listener.getLogger());
             return null;
         }
     }

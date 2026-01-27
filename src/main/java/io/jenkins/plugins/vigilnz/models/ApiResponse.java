@@ -207,10 +207,19 @@ public class ApiResponse {
             private int lowFindings;
             private int riskScore;
 
+            // DAST SCAN fields
             private String dastScanType;
             private String targetUrl;
 
-            // SBOM fields
+            // CONTAINER SCAN fields
+            private String imageName;
+            private String registryProvider;
+            private String imageType;
+            private String totalSecrets;
+            private String totalMisconfigurations;
+            private String error;
+
+            // SBOM SCAN fields
             private int totalDependencies;
             private int directDependencies;
             private int transitiveDependencies;
@@ -312,6 +321,54 @@ public class ApiResponse {
 
             public void setTargetUrl(String targetUrl) {
                 this.targetUrl = targetUrl;
+            }
+
+            public String getImageName() {
+                return imageName;
+            }
+
+            public void setImageName(String imageName) {
+                this.imageName = imageName;
+            }
+
+            public String getRegistryProvider() {
+                return registryProvider;
+            }
+
+            public void setRegistryProvider(String registryProvider) {
+                this.registryProvider = registryProvider;
+            }
+
+            public String getImageType() {
+                return imageType;
+            }
+
+            public void setImageType(String imageType) {
+                this.imageType = imageType;
+            }
+
+            public String getTotalSecrets() {
+                return totalSecrets;
+            }
+
+            public void setTotalSecrets(String totalSecrets) {
+                this.totalSecrets = totalSecrets;
+            }
+
+            public String getTotalMisconfigurations() {
+                return totalMisconfigurations;
+            }
+
+            public void setTotalMisconfigurations(String totalMisconfigurations) {
+                this.totalMisconfigurations = totalMisconfigurations;
+            }
+
+            public String getError() {
+                return error;
+            }
+
+            public void setError(String error) {
+                this.error = error;
             }
         }
     }

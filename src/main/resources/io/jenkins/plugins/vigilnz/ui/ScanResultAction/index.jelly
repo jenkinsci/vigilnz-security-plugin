@@ -39,17 +39,19 @@
             </div>
 
             <!-- Project Info -->
-            <div style="margin-top:20px; padding:15px; border:1px solid #eee; border-radius:6px; background:#fafafa;">
-                <h2 style="margin-top:0;">Project Information</h2>
-                <p>
-                    <span style="font-weight:600;color:#5c5c5c">Project Name: </span>
-                    <span style="font-weight:bold">${it.response.projectName}</span>
-                </p>
-                <p>
-                    <span style="font-weight:600;color:#5c5c5c">Repository: </span>
-                    <a style="font-weight:bold;" href="${it.response.repoUrl}" target="_blank">${it.response.repoName}</a>
-                </p>
-            </div>
+            <j:if test="${it.response.projectName and it.response.repoUrl}">
+                <div style="margin-top:20px; padding:15px; border:1px solid #eee; border-radius:6px; background:#fafafa;">
+                    <h2 style="margin-top:0;">Project Information</h2>
+                    <p>
+                        <span style="font-weight:600;color:#5c5c5c">Project Name: </span>
+                        <span style="font-weight:bold">${it.response.projectName}</span>
+                    </p>
+                    <p>
+                        <span style="font-weight:600;color:#5c5c5c">Repository: </span>
+                        <a style="font-weight:bold;" href="${it.response.repoUrl}" target="_blank">${it.response.repoName}</a>
+                    </p>
+                </div>
+            </j:if>
 
             <!-- Alert Banner -->
             <div style="margin-top:20px; padding:15px;font-weight:600; background:#ffe5e5; border:1px solid #ff9999; border-radius:6px;display:flex;justify-content:space-between;align-items:center">
@@ -152,6 +154,36 @@
                                     </div>
                                 </j:if>
                             </j:when>
+                            <j:when test="${res.scanType == 'CONTAINER'}">
+                                <div style="margin-bottom:5px;display:flex;gap:10px;align-items:center;">
+                                    <p style="margin:0px;">
+                                        <span style="font-weight:600;color:#5c5c5c">Image Name: </span>
+                                        <span style="font-weight:bold;">${res.details.imageName}</span>
+                                    </p>
+                                    <div style="font-weight: 500;width: 60px;text-align: center;color: white;background: #104bc4;border-radius: 10px;">
+                                        ${res.details.imageType}
+                                    </div>
+                                </div>
+                                <p style="margin-bottom:5px;">
+                                    <span style="font-weight:600;color:#5c5c5c">Registry Provider: </span>
+                                    <span style="font-weight:bold;">${res.details.registryProvider}</span>
+                                </p>
+                                <j:choose>
+                                    <j:when test="${res.status.equalsIgnoreCase('failed')}">
+                                        <p style="margin-bottom:5px;">
+                                            <span style="font-weight:600;color:#5c5c5c">Error: </span>
+                                            <span style="font-weight:500;color:#f70d0d">${res.details.error}</span>
+                                        </p>
+                                    </j:when>
+                                    <j:otherwise>
+                                        <j:if test="${res.progress != 100 or !res.status.equalsIgnoreCase('completed')}">
+                                            <div style="display:flex;gap:5px;align-items:center;font-weight:500;margin-bottom:5px;">
+                                                <t:progressBar pos="${res.progress}" animate="true" /> ${res.progress}%
+                                            </div>
+                                        </j:if>
+                                    </j:otherwise>
+                                </j:choose>
+                            </j:when>
                             <j:otherwise>
                                 <p style="margin-bottom:5px;">
                                     <span style="font-weight:600;color:#5c5c5c">Branch: </span>
@@ -185,6 +217,27 @@
                                             <td>${res.details.highFindings}</td>
                                             <td>${res.details.mediumFindings}</td>
                                             <td>${res.details.lowFindings}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </j:when>
+                            <j:when test="${res.scanType == 'CONTAINER'}">
+                                <!-- CONTAINER details -->
+                                <table class="jenkins-table jenkins-table--medium" style="width:100%; margin-top:10px;">
+                                    <thead>
+                                        <tr>
+                                            <th>Total Vulnerabilities</th>
+                                            <th>Total Misconfigurations</th>
+                                            <th>Total Secrets</th>
+                                            <th>Risk Score</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>${res.details.totalFindings}</td>
+                                            <td>${res.details.totalMisconfigurations}</td>
+                                            <td>${res.details.totalSecrets}</td>
+                                            <td>${res.details.riskScore}/100</td>
                                         </tr>
                                     </tbody>
                                 </table>

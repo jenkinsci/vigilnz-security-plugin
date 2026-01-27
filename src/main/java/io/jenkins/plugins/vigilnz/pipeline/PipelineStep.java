@@ -10,6 +10,7 @@ import hudson.security.ACL;
 import hudson.util.ListBoxModel;
 import io.jenkins.plugins.vigilnz.credentials.TokenCredentials;
 import io.jenkins.plugins.vigilnz.models.ApiRequest;
+import io.jenkins.plugins.vigilnz.models.ContainerScanContext;
 import jakarta.annotation.Nonnull;
 import java.util.*;
 import org.jenkinsci.plugins.workflow.steps.Step;
@@ -27,6 +28,8 @@ public class PipelineStep extends Step {
     private final String scanTypes;
     private String projectName; // Optional parameter
     private ApiRequest.ScanContext dastScanContext = new ApiRequest.ScanContext("", ""); // Required for Dast Scan
+
+    private ContainerScanContext containerScanContext = new ContainerScanContext("", ""); // Required for Container Scan
 
     private boolean cveScan;
     private boolean sastScan;
@@ -92,7 +95,6 @@ public class PipelineStep extends Step {
         return sastScan;
     }
 
-    @DataBoundSetter
     public void setSastScan(boolean sastScan) {
         this.sastScan = sastScan;
     }
@@ -101,7 +103,6 @@ public class PipelineStep extends Step {
         return sbomScan;
     }
 
-    @DataBoundSetter
     public void setSbomScan(boolean sbomScan) {
         this.sbomScan = sbomScan;
     }
@@ -110,7 +111,6 @@ public class PipelineStep extends Step {
         return iacScan;
     }
 
-    @DataBoundSetter
     public void setIacScan(boolean iacScan) {
         this.iacScan = iacScan;
     }
@@ -119,9 +119,17 @@ public class PipelineStep extends Step {
         return secretScan;
     }
 
-    @DataBoundSetter
     public void setSecretScan(boolean secretScan) {
         this.secretScan = secretScan;
+    }
+
+    public ContainerScanContext getContainerScanContext() {
+        return containerScanContext;
+    }
+
+    @DataBoundSetter
+    public void setContainerScanContext(ContainerScanContext containerScanContext) {
+        this.containerScanContext = containerScanContext;
     }
 
     @Extension
