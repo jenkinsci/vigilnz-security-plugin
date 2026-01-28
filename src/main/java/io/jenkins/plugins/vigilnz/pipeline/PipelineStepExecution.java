@@ -10,7 +10,9 @@ import hudson.model.Run;
 import hudson.model.TaskListener;
 import io.jenkins.plugins.vigilnz.api.ApiService;
 import io.jenkins.plugins.vigilnz.credentials.TokenCredentials;
+import io.jenkins.plugins.vigilnz.models.ApiRequest;
 import io.jenkins.plugins.vigilnz.models.ApiResponse;
+import io.jenkins.plugins.vigilnz.models.ContainerScanContext;
 import io.jenkins.plugins.vigilnz.ui.ScanResultAction;
 import io.jenkins.plugins.vigilnz.utils.VigilnzConfig;
 import java.io.File;
@@ -18,7 +20,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import net.sf.json.JSONObject;
 import org.jenkinsci.plugins.workflow.steps.StepContext;
 import org.jenkinsci.plugins.workflow.steps.StepExecution;
 
@@ -77,6 +82,46 @@ public class PipelineStepExecution extends StepExecution {
         }
     }
 
+    //    public String displayScan(List<String> scansList) {
+    //        scansList.stream().map(s -> {
+    //            if (s.equalsIgnoreCase("cve")) {
+    //                s = "sca";
+    //            } else if (s.equalsIgnoreCase("secret")) {
+    //                s = "secret scan";
+    //            } else if (s.equalsIgnoreCase("iac")) {
+    //                s = "iac scan";
+    //            } else if (s.equalsIgnoreCase("container")) {
+    //                s = "container scan";
+    //            }
+    //            return s.toUpperCase();
+    //        });
+    //        return String.join(", ", scansList);
+    //    }
+
+    public List<String> convertToScanList(String scanTypes) {
+        // Split comma-separated string into a list
+        if (scanTypes != null && !scanTypes.trim().isEmpty()) {
+            List<String> scanTypeList = Arrays.asList(scanTypes.split("\\s*,\\s*"));
+            return scanTypeList.stream()
+                    .map(s -> {
+                        if (s.equalsIgnoreCase("sca")) {
+                            return "cve";
+                        } else if (s.equalsIgnoreCase("secret scan")) {
+                            return "secret";
+                        } else if (s.equalsIgnoreCase("iac scan")) {
+                            return "iac";
+                        } else if (s.equalsIgnoreCase("container scan")) {
+                            return "container";
+                        } else {
+                            return s.toLowerCase();
+                        }
+                    })
+                    .collect(Collectors.toList());
+        } else {
+            return List.of();
+        }
+    }
+
     @Override
     public boolean start() throws Exception {
 
@@ -113,7 +158,9 @@ public class PipelineStepExecution extends StepExecution {
             // Set base URL based on environment selection
             VigilnzConfig.setBaseUrl(creds.getEnvironment());
 
-            List<String> scanTypes = step.getScanTypes();
+            listener.getLogger().println("Selected Scan Types: " + step.getScanTypes());
+
+            List<String> scanTypes = convertToScanList(step.getScanTypes());
 
             // Validate at least one scan type is selected
             if (scanTypes == null || scanTypes.isEmpty()) {
@@ -123,16 +170,51 @@ public class PipelineStepExecution extends StepExecution {
                 return false;
             }
 
-            listener.getLogger().println("Selected Scan Types: " + String.join(", ", scanTypes));
+            ApiRequest apiRequest = new ApiRequest();
+            apiRequest.setProjectName(step.getProjectName());
+            apiRequest.setScanTypes(scanTypes);
+            apiRequest.setScanContext(step.getDastScanContext());
+
+            ApiRequest.ContainerScanContext containerScanContext = new ApiRequest.ContainerScanContext("");
+
+            ContainerScanContext pipeLineContainerScanInfo = step.getContainerScanContext();
+
+            containerScanContext.setImageName(pipeLineContainerScanInfo.getImage());
+            containerScanContext.setRegistryProvider(pipeLineContainerScanInfo.getProvider());
+
+            JSONObject json = new JSONObject();
+            if (pipeLineContainerScanInfo.getAuth() != null) {
+                containerScanContext.setAuthMethod(
+                        pipeLineContainerScanInfo.getAuth().getType());
+
+                // Send scan types as array
+                if (pipeLineContainerScanInfo.getAuth().getType().equalsIgnoreCase("token")) {
+                    json.put("token", pipeLineContainerScanInfo.getAuth().getToken());
+                } else if (pipeLineContainerScanInfo.getAuth().getType().equalsIgnoreCase("username-password")) {
+                    json.put("username", pipeLineContainerScanInfo.getAuth().getUsername());
+                    json.put("password", pipeLineContainerScanInfo.getAuth().getPassword());
+                }
+                containerScanContext.setCredentials(json);
+            }
+
+            if (pipeLineContainerScanInfo.getRegistry() != null) {
+                containerScanContext.setCustomRegistryUrl(
+                        pipeLineContainerScanInfo.getRegistry().getUrl());
+                containerScanContext.setRegistrySubType(
+                        pipeLineContainerScanInfo.getRegistry().getType());
+            }
+
+            apiRequest.setContainerScanContext(containerScanContext);
 
             String result;
             try {
-                result = ApiService.triggerScan(token, step.getProjectName(), scanTypes, env, listener);
+                result = ApiService.triggerScan(token, apiRequest, env, listener);
                 if (result != null && !result.isEmpty()) {
                     run.addAction(new ScanResultAction(result, credentialsId));
                 } else {
                     listener.getLogger().println("API call failed, no action added.");
-                    // return false;
+                    getContext().onFailure(new AbortException("Scan failed"));
+                    return false;
                 }
             } catch (Exception e) {
                 listener.error("Scan failed");

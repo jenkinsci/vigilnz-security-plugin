@@ -1,5 +1,5 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:c="/lib/credentials">
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:f="/lib/form" xmlns:c="/lib/credentials">
 
     <f:entry title="Credentials" field="credentialsId">
         <c:select/>
@@ -10,11 +10,175 @@
             <f:checkbox field="cveScan" title="SCA"/>
             <f:checkbox field="sbomScan" title="SBOM"/>
             <f:checkbox field="sastScan" title="SAST"/>
+            <f:checkbox field="dastScan" checked="${instance.dastScan}" id="dast-scan-id" title="DAST"/>
             <f:checkbox field="secretScan" title="SECRET SCAN"/>
+            <f:checkbox field="containerScan" checked="${instance.containerScan}" id="container-scan-id"
+                        title="CONTAINER SCAN"/>
             <f:checkbox field="iacScan" title="IAC SCAN"/>
         </div>
     </f:entry>
+    <st:adjunct includes="io.jenkins.plugins.vigilnz.build.SecurityCheckBuilder.config-script"/>
+
+    <div id="dast-scan-section">
+        <!--        <f:entry title="DAST Scan Fields" field="dastScanContext">-->
+        <div style="margin-bottom:25px;">
+            <div style="padding-bottom:15px;">DAST Scan Fields</div>
+            <div style="padding-left:10px;display:flex;gap:10px">
+                <div style="width:80%">
+                    <f:entry title="Target URL" class="jenkins-!-margin-0" field="targetSiteUrl">
+                        <f:textbox placeholder="https://example.com"/>
+                    </f:entry>
+                </div>
+                <div style="width:20%">
+                    <f:entry title="Scan Type" class="jenkins-!-margin-0" field="dastScanType">
+                        <f:select/>
+                    </f:entry>
+                </div>
+            </div>
+        </div>
+        <!--        </f:entry>-->
+    </div>
+
+    <div id="container-scan-section">
+        <!--        <input type="hidden" name="registryType" id="registryTypeId" value="${instance.registryType}"/>-->
+        <!--        <input type="hidden" name="accessToken" id="accessTokenFieldId" value=""/>-->
+
+        <input type="hidden" name="registryType" id="registryTypeClass" value="${instance.registryType}"/>
+        <input type="hidden" name="accessToken" id="accessTokenFieldClass" value=""/>
+
+        <div style="padding-bottom: 15px">Container Scan Fields</div>
+        <div style="padding-left:10px;display:flex;gap:10px">
+            <div style="width:75%">
+                <f:entry title="Image Name" class="jenkins-!-margin-bottom-2" field="imageName">
+                    <f:textbox clazz="imageNameClass" placeholder="Enter Image Name"/>
+                </f:entry>
+            </div>
+            <div style="width:25%">
+                <f:entry title="Provider Name" class="jenkins-!-margin-bottom-2" field="registryProvider">
+                    <f:select clazz="providerNameClass"/>
+                </f:entry>
+            </div>
+        </div>
+
+        <div style="padding-left:10px;">
+            <input type="hidden" name="authType" id="authTypeClass" value=""/>
+            <div id="dockerhubFields" style="display:none;">
+                <f:entry title="Authentication Method" field="dockerAuthMethod">
+                    <f:select clazz="dockerAuthMethodClass"/>
+                </f:entry>
+                <div id="dockerAuthFields" style="display:none;">
+                    <f:entry title="Username" field="dockerUsername">
+                        <f:textbox placeholder="Registry username"/>
+                    </f:entry>
+                    <f:entry title="Password" field="dockerPassword">
+                        <f:password/>
+                    </f:entry>
+                </div>
+            </div>
+
+            <div id="awsEcrFields" style="display:none;">
+                <f:entry title="Registry Type" field="awsRegistryType">
+                    <f:select clazz="awsEcrFieldsClass"/>
+                </f:entry>
+                <div id="ecrAuthFields" style="display:none;">
+                    <f:entry title="Registry Url" field="registryUrl">
+                        <f:textbox placeholder="eg: 123456789012.dkr.ecr.us-east-1.amazonaws.com"/>
+                    </f:entry>
+                    <f:entry title="Access Token" class="accessTokenTextbox" field="ecrAccessToken">
+                        <f:password/>
+                    </f:entry>
+                </div>
+            </div>
+
+            <div id="githubFields" style="display:none;">
+                <f:entry title="Authentication Method" field="gitRegistryType">
+                    <f:select clazz="gitHubFieldsClass"/>
+                </f:entry>
+                <div id="gitHubAuthFields" style="display:none;">
+                    <f:entry title="Access Token" class="accessTokenTextbox" field="gitHubAccessToken">
+                        <f:password/>
+                    </f:entry>
+                </div>
+            </div>
+
+            <div id="googleFields" style="display:none;">
+                <f:entry title="Registry Type" field="googleRegistryType">
+                    <f:select clazz="googleFieldsClass"/>
+                </f:entry>
+                <div id="googleRegistryUrlFieldId">
+                    <f:entry title="Registry Url" field="googleRegistryUrl">
+                        <f:textbox placeholder="eg: us-central1-docker.pkg.dev"/>
+                    </f:entry>
+                </div>
+                <div id="googleGCRDropdown">
+                    <f:entry title="Authenticate Method" field="googleAuthenticateFields">
+                        <f:select clazz="googleAuthenticateFieldsClass"/>
+                    </f:entry>
+                </div>
+                <div id="googleAccessTokenFieldId">
+                    <f:entry title="Access Token" class="accessTokenTextbox" field="googleAccessToken">
+                        <f:password/>
+                    </f:entry>
+                </div>
+            </div>
+
+            <div id="azureFields" style="display:none;">
+                <f:entry title="Registry Type" field="azureRegistryType">
+                    <f:select clazz="azureFieldsClass"/>
+                </f:entry>
+                <div id="azureRegistryUrlFieldId">
+                    <f:entry title="Registry Url" field="azureRegistryUrl">
+                        <f:textbox placeholder="eg: myregistry.azurecr.io"/>
+                    </f:entry>
+                </div>
+                <div id="azureGCRDropdown">
+                    <f:entry title="Authenticate Method" field="azureAuthenticateFields">
+                        <f:select clazz="azureAuthenticateFieldsClass"/>
+                    </f:entry>
+                    <div id="azureAuthFields" style="display:none;">
+                        <f:entry title="Username" field="azureUsername">
+                            <f:textbox placeholder="Registry username"/>
+                        </f:entry>
+                        <f:entry title="Password" field="azurePassword">
+                            <f:password/>
+                        </f:entry>
+                    </div>
+                    <div id="azureAccessTokenFieldId">
+                        <f:entry title="Access Token" class="accessTokenTextbox" field="azureAccessToken">
+                            <f:password/>
+                        </f:entry>
+                    </div>
+                </div>
+            </div>
+
+            <div id="quayFields" style="display:none;">
+                <f:entry title="Authenticate Method" field="quayAuthenticateFields">
+                    <f:select clazz="quayAuthenticateFieldsClass"/>
+                </f:entry>
+                <div id="quayAuthFields" style="display:none;">
+                    <f:entry title="Username" field="quayUsername">
+                        <f:textbox placeholder="Registry username"/>
+                    </f:entry>
+                    <f:entry title="Password" field="quayPassword">
+                        <f:password/>
+                    </f:entry>
+                </div>
+                <div id="quayAccessTokenFieldId">
+                    <f:entry title="Access Token" class="accessTokenTextbox" field="quayAccessToken">
+                        <f:password/>
+                    </f:entry>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <f:entry title="Project Name" field="projectName">
         <f:textbox/>
     </f:entry>
+
+    <style>
+        #container-scan-section .jenkins-form-item{
+            margin-bottom:15px;
+        }
+    </style>
 </j:jelly>
