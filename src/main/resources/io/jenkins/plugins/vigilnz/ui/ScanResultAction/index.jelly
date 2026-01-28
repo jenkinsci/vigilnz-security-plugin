@@ -12,7 +12,8 @@
             <!-- Header -->
             <div style="padding:20px 0px; border-bottom:1px solid #ddd;">
                 <div style="display:flex; align-items:center; gap:10px;margin:0; font-family:Helvetica, sans-serif; color:#333;">
-                    <l:icon src="symbol-vigilnz plugin-vigilnz-security" style="width:45px;height:45px;" class="icon-xlg"/>
+                    <l:icon src="symbol-vigilnz plugin-vigilnz-security" style="width:45px;height:45px;"
+                            class="icon-xlg"/>
                     <div style="display:flex;flex-direction:column;">
                         <h1 style="margin:0;">Vigilnz Security Scan Results</h1>
                         <p style="color:#666; margin:0;">Comprehensive security analysis powered by Vigilnz</p>
@@ -22,16 +23,24 @@
                     <j:choose>
                         <j:when test="${it.getIsScanCompleted() or it.response.isAllScanCompleted}">
                             <!-- Show design when completed -->
-                            <h4 style="color:green;margin:0px;display:flex;gap:5px;align-items:center;"><l:icon class="icon-md" src="symbol-status-blue" /> Scan Completed</h4>
-                            <h5 class="completed-box" style="font-weight:600;margin:0px"> All results are ready! </h5>
+                            <h4 style="color:green;margin:0px;display:flex;gap:5px;align-items:center;">
+                                <l:icon class="icon-md" src="symbol-status-blue"/>
+                                Scan Completed
+                            </h4>
+                            <h5 class="completed-box" style="font-weight:600;margin:0px">All results are ready!</h5>
                         </j:when>
                         <j:otherwise>
-                            <h4 style="color:orange;margin:0px;display:flex;gap:5px;align-items:center;"><l:icon class="icon-md" src="symbol-status-nobuilt" /> Scan In Progress</h4>
+                            <h4 style="color:orange;margin:0px;display:flex;gap:5px;align-items:center;">
+                                <l:icon class="icon-md" src="symbol-status-nobuilt"/>
+                                Scan In Progress
+                            </h4>
                             <h5 class="pending-box" style="font-weight:600;margin:0px">
                                 Please wait, scans are still running...
                             </h5>
-                            <button onclick="location.reload();" style="display:flex;gap:5px;align-items:center;padding: 5px 8px;background:#3b82f6;color:#fff;font-size: 12px;border:none;border-radius:4px;cursor:pointer;width: max-content;">
-                                <l:icon class="icon-sm" src="symbol-refresh" />  Refresh
+                            <button onclick="location.reload();"
+                                    style="display:flex;gap:5px;align-items:center;padding: 5px 8px;background:#3b82f6;color:#fff;font-size: 12px;border:none;border-radius:4px;cursor:pointer;width: max-content;">
+                                <l:icon class="icon-sm" src="symbol-refresh"/>
+                                Refresh
                             </button>
                         </j:otherwise>
                     </j:choose>
@@ -39,16 +48,18 @@
             </div>
 
             <!-- Project Info -->
-            <j:if test="${it.response.projectName and it.response.repoUrl}">
+            <j:if test="${it.response.projectName != null and it.response.repoUrl != null}">
                 <div style="margin-top:20px; padding:15px; border:1px solid #eee; border-radius:6px; background:#fafafa;">
                     <h2 style="margin-top:0;">Project Information</h2>
                     <p>
-                        <span style="font-weight:600;color:#5c5c5c">Project Name: </span>
+                        <span style="font-weight:600;color:#5c5c5c">Project Name:</span>
                         <span style="font-weight:bold">${it.response.projectName}</span>
                     </p>
                     <p>
-                        <span style="font-weight:600;color:#5c5c5c">Repository: </span>
-                        <a style="font-weight:bold;" href="${it.response.repoUrl}" target="_blank">${it.response.repoName}</a>
+                        <span style="font-weight:600;color:#5c5c5c">Repository:</span>
+                        <a style="font-weight:bold;" href="${it.response.repoUrl}" target="_blank">
+                            ${it.response.repoName}
+                        </a>
                     </p>
                 </div>
             </j:if>
@@ -63,9 +74,9 @@
                 </div>
                 <div style="margin:8px 0;display:flex;gap:20px;align-items:center;">
                     <div style="display:flex;flex-direction:column;justify-center:center;align-items:center;gap:5px">
-                       <span style="color:#ef4343;font-size:18px;font-weight:bold">
-                           <j:set var="critical" value="${it.getTotalFindingsBySeverity('critical')}"/>
-                           ${critical}
+                        <span style="color:#ef4343;font-size:18px;font-weight:bold">
+                            <j:set var="critical" value="${it.getTotalFindingsBySeverity('critical')}"/>
+                            ${critical}
                         </span>
                         <span>Critical</span>
                     </div>
@@ -101,19 +112,24 @@
                             <h2 style="margin: 0;margin-bottom:15px;display: flex;gap: 10px;align-items: center;">
                                 <j:choose>
                                     <j:when test="${res.scanType == 'CVE'}">
-                                        <l:icon src="symbol-sca plugin-vigilnz-security" style="width:25px;height:25px;" class="icon-lg"/>
+                                        <l:icon src="symbol-sca plugin-vigilnz-security" style="width:25px;height:25px;"
+                                                class="icon-lg"/>
                                     </j:when>
                                     <j:when test="${res.scanType == 'SBOM'}">
-                                        <l:icon src="symbol-sbom plugin-vigilnz-security" style="width:25px;height:25px;" class="icon-lg"/>
+                                        <l:icon src="symbol-sbom plugin-vigilnz-security"
+                                                style="width:25px;height:25px;" class="icon-lg"/>
                                     </j:when>
                                     <j:when test="${res.scanType == 'SAST'}">
-                                        <l:icon src="symbol-sast plugin-vigilnz-security" style="width:25px;height:25px;" class="icon-lg"/>
+                                        <l:icon src="symbol-sast plugin-vigilnz-security"
+                                                style="width:25px;height:25px;" class="icon-lg"/>
                                     </j:when>
                                     <j:when test="${res.scanType == 'SECRET'}">
-                                        <l:icon src="symbol-secret plugin-vigilnz-security" style="width:25px;height:25px;" class="icon-lg"/>
+                                        <l:icon src="symbol-secret plugin-vigilnz-security"
+                                                style="width:25px;height:25px;" class="icon-lg"/>
                                     </j:when>
                                     <j:when test="${res.scanType == 'IAC'}">
-                                        <l:icon src="symbol-iac plugin-vigilnz-security" style="width:25px;height:25px;" class="icon-lg"/>
+                                        <l:icon src="symbol-iac plugin-vigilnz-security" style="width:25px;height:25px;"
+                                                class="icon-lg"/>
                                     </j:when>
                                 </j:choose>
                                 ${res.scanType == 'CVE' ? 'SCA' : res.scanType} Scan Results
@@ -122,12 +138,13 @@
                                 <a href="${it.getSiteUrl(res.scanType)}"
                                    target="_blank"
                                    style="color:#3b82f6; font-weight:600; text-decoration:none;">
-                                    View Details <l:icon class="icon-sm" src="symbol-arrow-right" />
+                                    View Details
+                                    <l:icon class="icon-sm" src="symbol-arrow-right"/>
                                 </a>
                             </div>
                         </div>
                         <p>
-                            <span style="font-weight:600;color:#5c5c5c">Status: </span>
+                            <span style="font-weight:600;color:#5c5c5c">Status:</span>
                             <j:choose>
                                 <j:when test="${res.status.equalsIgnoreCase('completed')}">
                                     <span style="color:green; font-weight:600;text-align: left;">${res.status}</span>
@@ -136,28 +153,31 @@
                                     <span style="color:orange; font-weight:600;text-align: left;">${res.status}</span>
                                 </j:otherwise>
                             </j:choose>
-                          </p>
+                        </p>
 
                         <j:choose>
                             <j:when test="${res.scanType == 'DAST'}">
                                 <p style="margin-bottom:5px;">
-                                    <span style="font-weight:600;color:#5c5c5c">Target Url: </span>
-                                    <a style="font-weight:bold;" href="${res.details.targetUrl}" target="_blank">${res.details.targetUrl}</a>
+                                    <span style="font-weight:600;color:#5c5c5c">Target Url:</span>
+                                    <a style="font-weight:bold;" href="${res.details.targetUrl}" target="_blank">
+                                        ${res.details.targetUrl}
+                                    </a>
                                 </p>
                                 <p style="margin-bottom:5px;">
-                                    <span style="font-weight:600;color:#5c5c5c">Scan Type: </span>
+                                    <span style="font-weight:600;color:#5c5c5c">Scan Type:</span>
                                     <span style="font-weight:bold;">${res.details.dastScanType}</span>
                                 </p>
                                 <j:if test="${res.progress != 100 or !res.status.equalsIgnoreCase('completed')}">
                                     <div style="display:flex;gap:5px;align-items:center;font-weight:500;">
-                                        <t:progressBar pos="${res.progress}" animate="true" /> ${res.progress}%
+                                        <t:progressBar pos="${res.progress}" animate="true"/>
+                                        ${res.progress}%
                                     </div>
                                 </j:if>
                             </j:when>
                             <j:when test="${res.scanType == 'CONTAINER'}">
                                 <div style="margin-bottom:5px;display:flex;gap:10px;align-items:center;">
                                     <p style="margin:0px;">
-                                        <span style="font-weight:600;color:#5c5c5c">Image Name: </span>
+                                        <span style="font-weight:600;color:#5c5c5c">Image Name:</span>
                                         <span style="font-weight:bold;">${res.details.imageName}</span>
                                     </p>
                                     <div style="font-weight: 500;width: 60px;text-align: center;color: white;background: #104bc4;border-radius: 10px;">
@@ -165,20 +185,21 @@
                                     </div>
                                 </div>
                                 <p style="margin-bottom:5px;">
-                                    <span style="font-weight:600;color:#5c5c5c">Registry Provider: </span>
+                                    <span style="font-weight:600;color:#5c5c5c">Registry Provider:</span>
                                     <span style="font-weight:bold;">${res.details.registryProvider}</span>
                                 </p>
                                 <j:choose>
                                     <j:when test="${res.status.equalsIgnoreCase('failed')}">
                                         <p style="margin-bottom:5px;">
-                                            <span style="font-weight:600;color:#5c5c5c">Error: </span>
+                                            <span style="font-weight:600;color:#5c5c5c">Error:</span>
                                             <span style="font-weight:500;color:#f70d0d">${res.details.error}</span>
                                         </p>
                                     </j:when>
                                     <j:otherwise>
                                         <j:if test="${res.progress != 100 or !res.status.equalsIgnoreCase('completed')}">
                                             <div style="display:flex;gap:5px;align-items:center;font-weight:500;margin-bottom:5px;">
-                                                <t:progressBar pos="${res.progress}" animate="true" /> ${res.progress}%
+                                                <t:progressBar pos="${res.progress}" animate="true"/>
+                                                ${res.progress}%
                                             </div>
                                         </j:if>
                                     </j:otherwise>
@@ -186,12 +207,13 @@
                             </j:when>
                             <j:otherwise>
                                 <p style="margin-bottom:5px;">
-                                    <span style="font-weight:600;color:#5c5c5c">Branch: </span>
+                                    <span style="font-weight:600;color:#5c5c5c">Branch:</span>
                                     <span style="font-weight:bold;">${res.branchName}</span>
                                 </p>
                                 <j:if test="${res.progress != 100 or !res.status.equalsIgnoreCase('completed')}">
                                     <div style="display:flex;gap:5px;align-items:center;font-weight:500;">
-                                        <t:progressBar pos="${res.progress}" animate="true" /> ${res.progress}%
+                                        <t:progressBar pos="${res.progress}" animate="true"/>
+                                        ${res.progress}%
                                     </div>
                                 </j:if>
                             </j:otherwise>
@@ -203,7 +225,7 @@
                                 <table class="jenkins-table jenkins-table--medium" style="width:100%; margin-top:10px;">
                                     <thead>
                                         <tr>
-                                            <th>Total Findings</th>
+                                            <th>Total Vulnerabilities</th>
                                             <th>Critical</th>
                                             <th>High</th>
                                             <th>Medium</th>
@@ -274,7 +296,7 @@
                                                         Total Packages
                                                     </j:when>
                                                     <j:otherwise>
-                                                        Total Findings
+                                                        Total Vulnerabilities
                                                     </j:otherwise>
                                                 </j:choose>
                                             </th>

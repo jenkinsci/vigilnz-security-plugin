@@ -1,0 +1,15 @@
+---
+alwaysApply: true
+---
+# Project Instructions
+
+* Follow OWASP: validate all user inputs in Jelly forms, sanitize outputs in views, and secure credentials via Jenkins Secret APIs.
+* Design plugins to be thread‑safe, avoid blocking calls in perform(), and use asynchronous tasks where possible.
+* Use modern idioms; keep code modular and maintainable
+* Update plugin README with usage examples. 
+* Unit test critical logic; ≥80% coverage; mock APIs
+* Wrap risky calls in try/catch, log with Logger using structured messages, never log secrets.
+* Minimize external libraries; use only maintained, version‑locked Maven artifacts.
+* Write meaningful, focused commits; never commit secrets
+* do not create document every time, create only when asked
+* For every new feature, scan the plugin codebase to identify how similar features are organized, then generate the corresponding Jelly views, descriptors, builders, and pipeline steps. Place files in the correct Jenkins plugin folders and maintain established naming conventions and architecture

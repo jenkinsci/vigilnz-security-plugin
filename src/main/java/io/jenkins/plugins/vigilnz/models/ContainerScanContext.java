@@ -45,7 +45,7 @@ public class ContainerScanContext {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public class Registry {
+    public static class Registry {
 
         private final String type;
         private String url;
@@ -70,7 +70,7 @@ public class ContainerScanContext {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public class Auth {
+    public static class Auth {
 
         private final String type;
         private String token;
