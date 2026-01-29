@@ -11,7 +11,7 @@ Vigilnz Security Plugin integrates comprehensive security scanning capabilities 
 -  **Secure Credential Management**: Store and manage Vigilnz API credentials securely
 -  **Freestyle & Pipeline Support**: Works with both traditional and modern Jenkins jobs
 -  **Detailed Results**: View scan results directly in the Jenkins build sidebar
-- ️ **Flexible Configuration**: Select which scan types to run per build
+-  ️**Flexible Configuration**: Select which scan types to run per build
 -  **Credential Management**: Automatic refresh and caching
 -  **DAST Scanning**: Dynamic Application Security Testing with configurable scan types (Spider, Active, Full)
 -  **Container Scanning**: Scan container images from multiple registry providers (Docker Hub, AWS ECR, GitHub, GitLab, Google, Azure, Quay.io)
@@ -567,7 +567,7 @@ pipeline {
 
 ## Changelog
 
-### Version 1.60
+### Version 1.1.2
 
 - Enhanced support for SCA, SAST, SBOM, IAC SCAN, and SECRET SCAN types
 - Added **DAST (Dynamic Application Security Testing)** scan support for both Freestyle and Pipeline jobs
