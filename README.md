@@ -14,7 +14,7 @@ Vigilnz Security Plugin integrates comprehensive security scanning capabilities 
 -  ️**Flexible Configuration**: Select which scan types to run per build
 -  **Credential Management**: Automatic refresh and caching
 -  **DAST Scanning**: Dynamic Application Security Testing with configurable scan types (Spider, Active, Full)
--  **Container Scanning**: Scan container images from multiple registry providers (Docker Hub, AWS ECR, GitHub, GitLab, Google, Azure, Quay.io)
+-  **Container Scanning**: Scan container images from multiple registry providers (Docker Hub, AWS ECR, GitHub, GitLab, Google, Azure, Quay.io).
 
 ## Requirements
 
