@@ -32,7 +32,8 @@ public class ApiService {
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setDoOutput(true);
 
-            listener.getLogger().println("Triggering authentication API call " + VigilnzConfig.getBaseUrl());
+            //            listener.getLogger().println("Triggering authentication API call " +
+            // VigilnzConfig.getBaseUrl());
 
             JSONObject json = new JSONObject();
             json.put("apiKey", apiKey);
@@ -167,7 +168,7 @@ public class ApiService {
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setDoOutput(true);
 
-            listener.getLogger().println("scanTypes -- : " + scanTypes);
+            //            listener.getLogger().println("scanTypes -- : " + scanTypes);
             // Validate scan types
             if (scanTypes == null || scanTypes.isEmpty()) {
                 listener.error("No scan types selected. At least one scan type is required.");
@@ -196,7 +197,7 @@ public class ApiService {
                 }
             }
 
-            listener.getLogger().println("No ++" + requestData.getContainerScanContext());
+            //            listener.getLogger().println("No ++" + requestData.getContainerScanContext());
             // Optional fields
             if (projectName != null && !projectName.trim().isEmpty()) {
                 json.put("projectName", projectName);
@@ -204,7 +205,7 @@ public class ApiService {
 
             String body = json.toString();
 
-            listener.getLogger().println("Payload: " + body);
+            //            listener.getLogger().println("Payload: " + body);
 
             try (OutputStream os = conn.getOutputStream()) {
                 os.write(body.getBytes(StandardCharsets.UTF_8));
@@ -221,7 +222,7 @@ public class ApiService {
                     response.append(line);
                     //                    listener.getLogger().println("API Body: ===--- " + line);
                 }
-                listener.getLogger().println("API Response Body: " + response);
+                //                listener.getLogger().println("API Response Body: " + response);
             }
 
             if (responseCode >= 400) {

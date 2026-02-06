@@ -38,7 +38,7 @@
                             <h5 class="pending-box" style="font-weight:600;margin:0px">
                                 Please wait, scans are still running...
                             </h5>
-                            <h5 class="reloadBtn">
+                            <h5 class="reloadBtn" style="margin-bottom:10px">
                                 <button style="display:flex;gap:5px;align-items:center;padding: 5px 8px;background:#3b82f6;color:#fff;font-size: 12px;border:none;border-radius:4px;cursor:pointer;width: max-content;">
                                     <l:icon class="icon-sm" src="symbol-refresh"/>
                                     Refresh
@@ -272,18 +272,18 @@
                                 <table class="jenkins-table jenkins-table--medium" style="width:100%; margin-top:10px;">
                                     <thead>
                                         <tr>
-                                            <th>Total Dependencies</th>
-                                            <th>Unique Packages</th>
-                                            <th>Direct</th>
-                                            <th>Transitive</th>
+                                            <th>Total Components</th>
+                                            <th>Direct Dependencies</th>
+                                            <th>Transitive Dependencies</th>
+                                            <th>Unused Dependencies</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td>${res.details.totalDependencies}</td>
-                                            <td>${res.details.uniquePackages}</td>
+                                            <td>${res.details.totalComponents}</td>
                                             <td>${res.details.directDependencies}</td>
                                             <td>${res.details.transitiveDependencies}</td>
+                                            <td>${res.details.unusedDependencies}</td>
                                         </tr>
                                     </tbody>
                                 </table>

@@ -11,7 +11,7 @@
 
   <groupId>io.jenkins.plugins</groupId>
   <artifactId>vigilnz-security</artifactId>
-  <version>2.0.0</version>
+  <version>2.0.1</version>
   <!--  Manually Change the version for normal number. eg: 1.06  -->
   <!--   <version>${revision}${changelist}</version>-->
   <!-- Automatically change the version. eg: 1.05.v1105d892a_60e  -->

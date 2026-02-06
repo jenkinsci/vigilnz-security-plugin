@@ -220,19 +220,19 @@ public class ApiResponse {
             private String error;
 
             // SBOM SCAN fields
-            private int totalDependencies;
+            private int totalComponents;
             private int directDependencies;
             private int transitiveDependencies;
-            private int uniquePackages;
+            private int unusedDependencies;
 
             public Details() {}
 
-            public int getTotalDependencies() {
-                return totalDependencies;
+            public int getTotalComponents() {
+                return totalComponents;
             }
 
-            public void setTotalDependencies(int totalDependencies) {
-                this.totalDependencies = totalDependencies;
+            public void setTotalComponents(int totalComponents) {
+                this.totalComponents = totalComponents;
             }
 
             public int getDirectDependencies() {
@@ -251,12 +251,12 @@ public class ApiResponse {
                 this.transitiveDependencies = transitiveDependencies;
             }
 
-            public int getUniquePackages() {
-                return uniquePackages;
+            public int getUnusedDependencies() {
+                return unusedDependencies;
             }
 
-            public void setUniquePackages(int uniquePackages) {
-                this.uniquePackages = uniquePackages;
+            public void setUnusedDependencies(int unusedDependencies) {
+                this.unusedDependencies = unusedDependencies;
             }
 
             public int getTotalFindings() {

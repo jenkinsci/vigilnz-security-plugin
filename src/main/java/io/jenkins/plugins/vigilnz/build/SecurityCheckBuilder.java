@@ -268,7 +268,7 @@ public class SecurityCheckBuilder extends Builder {
             listener.getLogger().println("Target File: (not specified)");
         }
         listener.getLogger().println("Selected Scan Types: " + displayScan(scanTypes));
-        listener.getLogger().println("Selected Scan Types:1 " + targetSiteUrl);
+        //        listener.getLogger().println("Selected Scan Types:1 " + targetSiteUrl);
         String result = "";
 
         ApiRequest apiRequest = new ApiRequest();
