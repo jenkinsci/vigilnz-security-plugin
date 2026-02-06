@@ -567,7 +567,7 @@ pipeline {
 
 ## Changelog
 
-### Version 1.1.4
+### Version 1.7.0
 
 - Enhanced support for SCA, SAST, SBOM, IAC SCAN, and SECRET SCAN types
 - Added **DAST (Dynamic Application Security Testing)** scan support for both Freestyle and Pipeline jobs
